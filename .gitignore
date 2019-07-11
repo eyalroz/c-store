@@ -1,0 +1,60 @@
+syntax: glob
+
+# Temporary, cache, swap files
+*~
+\#\#* 
+*.swp
+*.bkp
+
+# Actual build products
+cstoreqp
+SRCS
+TAGS
+*.d
+*.a
+*.o
+*.so
+*.ptx
+bin/*
+lib/*
+cmake-build-release/
+cmake-build-debug/
+cmake-build-default/
+docs/
+
+# Generated parser code
+src/parser/grammar.cpp
+src/parser/grammar.h
+src/parser/lexer.cpp
+
+# CMake-generated files
+CMakeCache.txt
+CMakeFiles/*
+cmake_install.cmake
+CMakeScripts/*
+CMakeTmp/*
+Makefile
+
+# CMake testing
+CTestTestfile.cmake
+
+# IDE-related files
+.project
+.cproject
+.settings
+.idea/
+
+# Patching
+*.diff
+*.rej
+*.orig
+
+# Files/folders downloaded from other repositories as part of the build
+external/*
+third-party/*
+
+# Miscellaneous
+tags
+
+# Doxygen
+doxygen.log
