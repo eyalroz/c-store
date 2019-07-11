@@ -1,0 +1,432 @@
+/*
+ * Scripts for running queries in Oracle
+ * Author: Tien Hoang (hoangt@cs.brandeis.edu)
+ * Modified:	Nga May26,2006 Add runtime
+ */
+
+#include <stdlib.h>
+#include <iostream>
+#include <stdio.h>
+#include <time.h>
+#include <assert.h>
+#include <string.h> 
+#include <list>
+#include <ctime>
+#include <sys/param.h>
+#include <sys/times.h>
+#include <sys/types.h>
+
+using namespace std;
+using std::cout;
+using std::endl;
+
+/* Declaring variables */
+
+EXEC SQL BEGIN DECLARE SECTION;
+	VARCHAR userid[20];
+        VARCHAR password[20];
+	char query[5000];
+	char buffer[200];
+EXEC SQL END DECLARE SECTION;
+
+/* Structure to contain information about an output */
+typedef struct {
+	char file_name[100]; 	/* Name of the plan */
+	int hour;		/* This together makes the total time for the plan hh:mm:ss */
+	int minute;
+	int second;
+} output;
+
+/* Global variables */
+int c = 0;
+int numberOfFiles = 0;   /* Total number of query file in the input file */
+int hour;	/* The current hour */
+int minute;	/* Curren minute */
+int second;	/* Current second */
+char planFileName[100];   /* .plan */
+char totalFileName[100];  /* Output file contains all the information (sorted) */
+output* _files;
+
+/* Include sqlca for handling Oracle errors */
+
+EXEC SQL INCLUDE SQLCA.H;
+
+
+/* Functions declaration */
+void sqlerror();
+void parseAndRun(char* inputFile);
+void runSQL();
+void getTime(char* input);
+int compare(output* f1, output* f2);
+void swap(output* f1, output* f2);
+void sortAndWrite();
+
+/* Main functions */
+
+int main(int argv, char** argc) {
+	
+	if (argv != 2) {
+		cout << "usage: need an input file" << endl;
+		return 0;
+	}	
+
+	parseAndRun(argc[1]);
+
+	/* Sort and write all output to one file */
+	sortAndWrite();
+
+	/* Memory de-allocation */
+	free (_files);
+
+	return 0;
+}
+
+
+/* Handles error */
+
+void sqlerror() {
+	EXEC SQL WHENEVER SQLERROR CONTINUE;
+	//printf("%.*s\n", sqlca.sqleerm.sqlerrml, sqlca.sqlerrm.sqlerrmc);
+	cout << sqlca.sqlerrm.sqlerrmc << endl;
+	EXEC SQL ROLLBACK WORK RELEASE;
+	exit(1);
+}
+
+
+/* Parse the input file (contains sql statements) and run selected sqls */
+
+void parseAndRun(char* ptrFileName) {
+	strcpy((char*) userid.arr, "ds2");
+	userid.len = (short) strlen((char*) userid.arr);
+	strcpy((char*) password.arr, "scale2");
+	password.len = (short) strlen((char*) password.arr);
+
+	EXEC SQL WHENEVER SQLERROR DO sqlerror();
+	
+	FILE* ptrInputFile = NULL;
+	FILE* ptrQueryFile = NULL;
+	char num[10]; num[0]='\0';
+
+	/* Reading from input file, one line at a time */
+	char line[50]; line[0] = '\0';
+	char sub_line[200]; sub_line[0] = '\0';
+
+	/* Open input file and start reading*/
+
+	if ((ptrInputFile = fopen(ptrFileName, "r")) == NULL) {
+		cout << "[ERR] - unable to open input file" << ptrFileName << endl;
+		exit (0);
+	}
+
+
+	// NGA: for getting runtime
+	clock_t watch;
+        struct tms t,u;
+        long r1,r2;
+
+	// Start time
+	r1 = times(&t);
+
+	// NGA END
+
+	while (fgets(line, 200, ptrInputFile) != NULL) {
+		char* param = strtok(line, " \n\t");
+			
+		if (param != NULL) {
+			if (strcmp(param, "numberOfFiles:") == 0) {
+				strcpy(num, strtok(NULL, " \n\t"));
+				numberOfFiles = atoi(num);
+				_files = (output*) malloc (sizeof(output) * numberOfFiles);
+			}
+			else if (strcmp(param, "outputFileName:") == 0) {
+				totalFileName[0] = '\0';
+				strcpy(totalFileName, strtok(NULL, " \n\t"));
+			}
+			else {
+				/* Connect to Oracle */
+				EXEC SQL CONNECT :userid IDENTIFIED BY :password;
+				// cout << "[Info] - Successfully connected to Oracle\n";
+				// cout << "[Info] - Running input file: " << line << endl;
+
+				planFileName[0] = '\0';
+				strcpy(planFileName, line);
+				char* temp = strchr(planFileName, '.');
+				strcpy(temp, ".plan");
+
+				if ((ptrQueryFile = fopen(line, "r")) == NULL) {
+					cout << "[Err] - unable to open input file " << line << endl;
+					exit (0);
+				}
+
+				while (fgets(sub_line, 200, ptrQueryFile) != NULL) {
+
+				/*	if (strstr(sub_line, "alter") != NULL) {
+						query[0] = '\0';
+						strcat(query, sub_line);
+						runSQL();
+					}
+					else */ if (strstr(sub_line, "CREATE OR REPLACE VIEW") != NULL) {
+						query[0] = '\0';
+						strcat(query, sub_line);
+						while (fgets(sub_line, 200, ptrQueryFile) != NULL) {
+							strcat(query, sub_line);
+							if (strchr(sub_line, ';') != NULL) {
+								runSQL(); break;
+							}
+						}
+					}
+					else if (strstr(sub_line, "SELECT PLAN_TABLE_OUTPUT") != NULL) {
+						query[0] = '\0';
+						strcat(query, sub_line);
+						runSQL(); 
+
+						/* Save the current information to _files array */
+						strcpy(_files[c].file_name, planFileName);
+						_files[c].hour = hour; _files[c].minute = minute; _files[c].second = second;
+						c++;
+
+						/* Disconnect */
+						EXEC SQL COMMIT WORK RELEASE;
+						// cout << "[Info] - Disconnected from Oracle\n\n";
+
+						break;
+
+						/* Close query file */
+						fclose(ptrQueryFile);
+					}
+					else if (strstr(sub_line, "EXPLAIN PLAN FOR") != NULL) {
+						query[0] = '\0';
+						strcat(query, sub_line);
+						while (fgets(sub_line, 200, ptrQueryFile) != NULL) {
+							strcat(query, sub_line);
+							if (strchr(sub_line, ';') != NULL) {
+								runSQL(); break;
+							}
+						}
+					}
+					else { /* Ignored */ }
+				}
+			}
+		}
+	}
+
+	// NGA
+	r2 = times(&u);
+           printf("user time=%f\n",
+                 ((float)(u.tms_utime-t.tms_utime))/(HZ));
+           printf("system time=%f\n",
+                 ((float)(u.tms_stime-t.tms_stime))/(HZ));
+           printf("real time=%f\n",
+                 ((float)(r2-r1))/(HZ));
+           printf("total time=%f\n",
+                 (((float)(r2-r1))/(HZ))*1000);
+          
+
+	// NGA END
+
+	/* Close input file */
+	fclose(ptrInputFile);
+}
+
+
+/* Given a particular query in c_str format (terminated by NULL)
+   The query can be run dynamically after a connection is established with
+   the Oracle database.  */
+
+void runSQL() {
+	/* Get rid of the semi-colon at the end of the query */
+	//query[strlen(query) - 3] = '\0';
+
+	char* tmp = strrchr(query, ';');
+	strcpy(tmp, "");
+
+	/* If it's the command to explain the play, save this into a buffer */
+	if (strstr(query, "SELECT PLAN_TABLE_OUTPUT") != NULL) {
+		query[0] = '\0';
+		strcpy(query,"SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY())");
+
+		/* Dynamically prepare & execute the query given a place holder :n */
+		EXEC SQL PREPARE Q FROM :query;
+		EXEC SQL DECLARE C CURSOR FOR Q;
+		EXEC SQL OPEN C;
+
+		/* Open a file for writing out query's plan */
+		FILE* ptrOutputPlan = NULL;
+		FILE* ptrOutputTime = NULL;
+
+		/* Create a new copy of the the planFileName and change it to .time for timeFileName */
+		char timeFileName[100]; timeFileName[0] = '\0';
+		strcpy(timeFileName, planFileName);
+		char* temp2 = strchr(timeFileName, '.');
+		strcpy(temp2, ".time");
+
+		/* Open output files */
+		if ((ptrOutputTime = fopen(timeFileName, "w")) == NULL) {
+			cout << "[Err] - unable to open " << timeFileName << " for writing" << endl;
+			exit (0);
+		}
+		if ((ptrOutputPlan = fopen(planFileName, "w")) == NULL) {
+			cout << "[Err] - unable to open " << planFileName << " for writing" << endl;
+			exit (0);
+		}
+
+		/* This is needed to read until the end of the active set that contains plan generation 
+		   Once compiled with make, you have to manually open OracleScript.c and change the last 'break' to 'return' */	
+		EXEC SQL WHENEVER NOT FOUND DO break;
+
+                for (;;) {
+                        /* Keep fetching from the cursor of the active set to the buffer until the end */
+                        EXEC SQL FETCH C into: buffer; fputs(buffer, ptrOutputPlan); fputc('\n', ptrOutputPlan);
+
+			if (strstr(buffer, "SELECT STATEMENT") != NULL) {
+				/* Copy the current buffer into temp. The current buffer now holds the total estimated time of the plan */
+				char temp[200]; temp[0] = '\0';
+				char num[10];
+				strcpy(temp, buffer);
+
+				/* This parse the string buffer temp and get the time in format of hh:mm:ss */
+				getTime(temp);
+
+				/* This is outputting to *.time file. The format is: <file name>: + <time> */
+				fputs(timeFileName, ptrOutputTime); fputs(":\t", ptrOutputTime);
+		
+				/* Hour */
+				sprintf(num, "%d", hour);
+				fputs(num, ptrOutputTime); fputc(':', ptrOutputTime);
+			
+				/* Minute */	
+				sprintf(num, "%d", minute);
+				fputs(num, ptrOutputTime); fputc(':', ptrOutputTime);
+
+				/* Second */
+				sprintf(num, "%d", second);
+				fputs(num, ptrOutputTime);
+
+				/* Close output to *.time */
+				fclose(ptrOutputTime);	
+			}                
+		}
+
+		/* Close the cursor from reading */
+		EXEC SQL CLOSE C;
+
+		/* Close writing to *.plan */
+		fclose(ptrOutputPlan);
+	}
+	else {
+		/* Dynamically run the query */
+		//cout << "[Info] - Running query:\n" << query << endl;
+		EXEC SQL PREPARE Q FROM :query;
+		EXEC SQL EXECUTE Q;
+
+//		EXEC SQL EXECUTE IMMEDIATE :query;
+		//cout << "[Info] - Done\n\n";
+	}
+}
+
+
+/* Given the input string from the plan file, get the total estimated time for running this query */
+void getTime(char* input) {
+	char * tok;
+	
+	/* Formatting... */
+	tok = strrchr(input, '|');   /* Get the last character | */
+	strcpy(tok, "");	     /* "Erase it" by replacing it with NULL */
+	tok = strrchr(input, '|');   /* This will again get the second to last character | of the orginal string */
+
+	/* The string tok2 now contains the time format: hh:mm:ss */
+	char * time_string = strtok(tok, " |");
+
+	/* Get hour */
+	char * tok2 = strtok(time_string, ":");
+	hour = atoi(tok2);
+
+	/* Get minute */
+	tok2 = strtok(NULL, ":");
+	minute = atoi(tok2);
+
+	/* Get second */
+	tok2 = strtok(NULL, "\n\0 ");
+	second = atoi(tok2);
+}
+
+
+/* Given two info f1 and f2:
+	1 is returned if f1's time > f2's time
+	0 is returned if f1's time = f2's time
+       -1 is returned if f1's time < f2's time 
+
+   For example:
+	f1 is 00:43:22 and f2 is 00:44:21
+	-1 is returned. */
+int compare(output* f1, output* f2) {
+	if (f1->hour < f2->hour) { return -1; }
+	else if (f1->hour > f2->hour) { return 1; }
+	else {
+		if (f1->minute < f2->minute) { return -1; }
+		else if (f1->minute > f2->minute) { return 1; }
+		else {
+			if (f1->second < f2->second) { return -1; }
+			else if (f1->second > f2->second) { return 1; }
+			else return 0;
+		}
+	}
+}
+
+
+/* Swap the two output f1 and f2 */
+void swap(output* f1, output* f2) {
+	output temp;
+
+	strcpy (temp.file_name, f2->file_name);
+	temp.hour = f2->hour; temp.minute = f2->minute; temp.second = f2->second;
+	
+	strcpy (f2->file_name, f1->file_name);
+	f2->hour = f1->hour; f2->minute = f1->minute; f2->second = f1->second;
+	
+	strcpy(f1->file_name, temp.file_name);
+	f1->hour = temp.hour; f1->minute = temp.minute; f1->second = temp.second;
+}
+
+
+/* Sort the _files in ascending estimated time and output all of them into one file */
+void sortAndWrite() {
+	/* Sorting */
+	for (int i = 0; i < numberOfFiles - 1; i++) {
+		for (int j = i + 1; j < numberOfFiles; j++) {
+			if (compare(&_files[i], &_files[j]) == 1) {
+				swap(&_files[i], &_files[j]);
+			}
+		}
+	}
+	
+	/* Printing */
+	FILE* ptrTotalOutput = NULL;
+	char num[10];
+
+	/* Open output file */
+	if ((ptrTotalOutput = fopen(totalFileName, "w")) == NULL) {
+		cout << "[Err] - unable to open " << totalFileName << " for writing" << endl;
+		exit (0);
+	}
+
+	/* Print each record to file */
+	for (int i = 0; i < numberOfFiles; i++) {
+		fputs(_files[i].file_name, ptrTotalOutput);
+		fputs(":\t\t", ptrTotalOutput);
+		
+		sprintf(num, "%d", _files[i].hour);
+		fputs(num, ptrTotalOutput); fputc(':', ptrTotalOutput);
+
+		sprintf(num, "%d", _files[i].minute);
+		fputs(num, ptrTotalOutput); fputc(':', ptrTotalOutput);
+
+		sprintf(num, "%d", _files[i].second);
+		fputs(num, ptrTotalOutput); 
+
+		fputc('\n', ptrTotalOutput);
+	}
+	
+	/* Close output file */
+	fclose(ptrTotalOutput);
+}

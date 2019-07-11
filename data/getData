@@ -1,0 +1,7 @@
+touch somethingToRemove
+ls -1 | grep -v getData | xargs rm
+wget http://db.csail.mit.edu/data/data4.tar.gz;
+wget http://db.csail.mit.edu/data/D6.data.ros.gz;
+gunzip D6.data.ros.gz;
+tar -xzvf data4.tar.gz;
+rm data4.tar.gz

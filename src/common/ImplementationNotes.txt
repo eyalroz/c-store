@@ -1,0 +1,34 @@
+RLEDataSource
+**********
+
+=>GetNextPage logic only considers logic predicates for now
+=>NOT IMPLEMENTED: Filtering with datasources is 
+=>RLEWriter assumes block input to it is in order
+=>RLEDataSource instatiates a new decoder for each page
+	-instead decoders could have a setPage logic
+	
+RLEExtractLoadAndAccess
+========================
+
+=> new and delete of a RLEDecoder in a loop
+
+AM
+==
+->cannot do initCursors more than once
+
+BitWriter
+=========
+-> Have to do memset (which probably slows it down slightly) of buffer or else some writes don't occur properly (see MultipleColumnsTest.cpp)
+-> cannot write negative values
+
+BitReader
+=========
+->Cannot read negative values
+
+DeltaPosBlock
+=============
+->init calls bit reader to read common values
+
+IntDataSource
+=============
+-when page sorted, we do lookup on am fine, but I walk down the whole page to find the values that start ot match pred (some type of search would be better)

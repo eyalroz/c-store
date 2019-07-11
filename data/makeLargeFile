@@ -1,0 +1,64 @@
+#makes lg file, 1Gb file
+rm lgFil*
+echo "This string has 32 characters ." > lgFile
+
+# 256 bytes
+cat lgFile lgFile lgFile lgFile lgFile lgFile lgFile lgFile > lgFile2 
+
+# 1K
+cat lgFile2 lgFile2 lgFile2 lgFile2 > lgFile
+
+# 4k
+cat lgFile lgFile lgFile lgFile > lgFile2
+
+# 8K
+echo "8K"
+cat lgFile2 lgFile2 lgFile2 lgFile2 > lgFile
+
+# 32k
+cat lgFile lgFile lgFile lgFile > lgFile2
+
+# 128K
+cat lgFile2 lgFile2 lgFile2 lgFile2 > lgFile
+
+# 512k
+echo "512K"
+ls -l lgFile
+cat lgFile lgFile lgFile lgFile > lgFile2
+
+# 1M
+echo "1M"
+ls -l lgFile2
+cat lgFile2 lgFile2 > lgFile
+
+# 4M
+echo "4M"
+ls -l lgFile
+cat lgFile lgFile lgFile lgFile > lgFile2
+
+# 8M
+echo "8M"
+ls -l lgFile2
+cat lgFile2 lgFile2 lgFile2 lgFile2 > lgFile
+
+# 32M
+echo "32M"
+ls -l lgFile
+cat lgFile lgFile lgFile lgFile > lgFile2
+
+# 128M
+echo "128M"
+ls -l lgFile2
+cat lgFile2 lgFile2 lgFile2 lgFile2 > lgFile
+
+# 512M
+echo "512M"
+ls -l lgFile
+cat lgFile lgFile > lgFile2
+# 1G
+echo "1G"
+ls -l lgFile2
+rm lgFile
+mv lgFile2 lgFile
+
+

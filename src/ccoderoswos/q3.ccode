@@ -1,0 +1,51 @@
+
+//ROS OPERATORS:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM4 = CatalogInstance::getCatalog()->getROSAM("Q3_l_shipdate");
+	Operator* lp_ROS4 = new RLEDataSource(lp_AM4, true);
+	( (DataSource*) lp_ROS4)->setPredicate(new Predicate((Predicate::PredicateType) 4));
+	( (DataSource*) lp_ROS4)->changeRHSBinding(9000);
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM5 = CatalogInstance::getCatalog()->getROSAM("Q3_l_suppkey");
+	Operator* lp_ROS5 = new IntDataSource(lp_AM5, false, true);
+	((DataSource*) lp_ROS5)->setPositionFilter(lp_ROS4, 0);
+//OPERATOR: Count
+	Operator* lp_ROS2 = new HashCount(lp_ROS5, 0, lp_ROS5, 0);
+	((HashAggregator*) lp_ROS2)->setHashFunction(new IdentityHashFunction(150000));
+	((HashAggregator*) lp_ROS2)->setHashTableSize(150000);
+
+//WOS OPERATORS:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM4 = CatalogInstance::getCatalog()->getWOSAM("Q3_l_shipdate", "Q3_l_shipdate");
+	Operator* lp_WOS4 = new IntDataSource(lp_WOSAM4, true, false);
+	( (DataSource*) lp_WOS4)->setPredicate(new Predicate((Predicate::PredicateType) 4));
+	( (DataSource*) lp_WOS4)->changeRHSBinding(9000);
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM5 = CatalogInstance::getCatalog()->getWOSAM("Q3_l_suppkey", "Q3_l_suppkey");
+	Operator* lp_WOS5 = new IntDataSource(lp_WOSAM5, true, false);
+	((DataSource*) lp_WOS5)->setPositionFilter(lp_WOS4, 0);
+//OPERATOR: Count
+	Operator* lp_WOS2 = new HashCount(lp_WOS5, 0, lp_WOS5, 0);
+	((HashAggregator*) lp_WOS2)->setHashFunction(new IdentityHashFunction(150000));
+	((HashAggregator*) lp_WOS2)->setHashTableSize(150000);
+
+//MERGE ROS AND WOS:
+//MERGE SORTED GROUP:
+	Operator* lp_Merge2 = new MergeSortedGroups(lp_ROS2, lp_WOS2, 2, 0); 
+	((MergeSortedGroups*) lp_Merge2)->setMergeOp(new MergeCountOp());
+
+//OUPUT THE RESULTS:
+	Operator* srcs[1] = {lp_Merge2};
+	int numColumns[1] = {2};
+	BlockPrinter* bPrint = new BlockPrinter(srcs, numColumns, 1, "QueryX.out");
+	bPrint->printColumns();

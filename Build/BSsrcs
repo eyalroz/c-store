@@ -1,0 +1,32 @@
+#!/usr/bin/perl -w
+
+# uniquify the source and header files found in the list of .d files
+# supplied by make.
+
+for $file (@ARGV) {
+    local($/);			# read file in one gulp
+    open(D, "<$file") or die("Couldn't open '$file': $!\n");
+
+    $_ = <D>;
+    s!\\\s+!!g;			# flush continuations
+    chomp;			# flush final newline
+    s!^.*?: (\S+) !! and	# flush target and extract source file
+	++$S{$1};
+    s!/\./!/!g;			# flush ./
+    1 while s!/[^/ .]+/\.\./!/!g; # flush /dir/../ pairs
+
+    for $h (split(' ', $_)) {
+	++$H{$h};
+    }
+}
+
+print join("\n", sort FN keys %S), "\n";
+print join("\n", sort FN keys %H), "\n";
+
+
+sub FN {
+    my($A) = $a =~ m!([^/]*)$!;
+    my($B) = $b =~ m!([^/]*)$!;
+    $A cmp $B;
+}
+

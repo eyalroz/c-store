@@ -1,0 +1,86 @@
+
+//ROS OPERATORS:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM5 = CatalogInstance::getCatalog()->getROSAM("D10_custkey");
+	Operator* lp_ROS5 = new IntDataSource(lp_AM5, false, true);
+	( (DataSource*) lp_ROS5)->setPredicate(new Predicate((Predicate::PredicateType) 0));
+	( (DataSource*) lp_ROS5)->changeRHSBinding(10);
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM6 = CatalogInstance::getCatalog()->getROSAM("D10_nationkey");
+	Operator* lp_ROS6 = new IntDataSource(lp_AM6, false, true);
+	( (DataSource*) lp_ROS6)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_ROS6)->changeRHSBinding(4);
+//OPERATOR: BOrOperator
+	Operator* lp_ROS4 = new BOrOperator(lp_ROS5, 0, lp_ROS6, 0);
+//COPY:
+	Operator* lp_ROS3 = new BCopyOperator(lp_ROS4,  0, 2);
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM7 = CatalogInstance::getCatalog()->getROSAM("D10_custkey");
+	Operator* lp_ROS7 = new IntDataSource(lp_AM7, false, true);
+	((DataSource*) lp_ROS7)->setPositionFilter(lp_ROS3, 0);
+
+//WOS OPERATORS:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM5 = CatalogInstance::getCatalog()->getWOSAM("D10_custkey", "D10_custkey");
+	Operator* lp_WOS5 = new IntDataSource(lp_WOSAM5, true, false);
+	( (DataSource*) lp_WOS5)->setPredicate(new Predicate((Predicate::PredicateType) 0));
+	( (DataSource*) lp_WOS5)->changeRHSBinding(10);
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM6 = CatalogInstance::getCatalog()->getWOSAM("D10_nationkey", "D10_nationkey");
+	Operator* lp_WOS6 = new IntDataSource(lp_WOSAM6, true, false);
+	( (DataSource*) lp_WOS6)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_WOS6)->changeRHSBinding(4);
+//OPERATOR: BOrOperator
+	Operator* lp_WOS4 = new BOrOperator(lp_WOS5, 0, lp_WOS6, 0);
+//COPY:
+	Operator* lp_WOS3 = new BCopyOperator(lp_WOS4,  0, 2);
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM7 = CatalogInstance::getCatalog()->getWOSAM("D10_custkey", "D10_custkey");
+	Operator* lp_WOS7 = new IntDataSource(lp_WOSAM7, true, false);
+	((DataSource*) lp_WOS7)->setPositionFilter(lp_WOS3, 0);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge7 = new Union(lp_ROS7, lp_WOS7, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM9 = CatalogInstance::getCatalog()->getROSAM("D10_nationkey");
+	Operator* lp_ROS9 = new IntDataSource(lp_AM9, false, true);
+	((DataSource*) lp_ROS9)->setPositionFilter(lp_ROS3, 1);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM9 = CatalogInstance::getCatalog()->getWOSAM("D10_nationkey", "D10_nationkey");
+	Operator* lp_WOS9 = new IntDataSource(lp_WOSAM9, true, false);
+	((DataSource*) lp_WOS9)->setPositionFilter(lp_WOS3, 1);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge9 = new Union(lp_ROS9, lp_WOS9, 1); 
+
+//OUPUT THE RESULTS:
+	Operator* srcs[2] = {lp_Merge7, lp_Merge9};
+	int numColumns[2] = {1, 1};
+	BlockPrinter* bPrint = new BlockPrinter(srcs, numColumns, 2, "QueryX.out");
+	bPrint->printColumns();

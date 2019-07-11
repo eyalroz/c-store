@@ -1,0 +1,440 @@
+#!/usr/bin/perl
+
+# $Id: wtf,v 1.25 2004/02/16 16:36:46 jsalz Exp $
+#
+# WTF?/C++ by Jon Salz <jsalz@lcs.mit.edu>
+#
+# A g++ output prettifier.
+#
+# Type "wtf" for usage.
+
+use strict;
+
+/`/;
+
+# From perlre - see (??{ ... }).  Matches nested template args
+my $targs;
+$targs = qr{<(?:(?>[^<>]+)|(??{$targs}))*>}x;
+my $chars_or_targs = qr{ (?: [^, ] | $targs )+ }x;
+
+######
+#
+# Kill every line with an element of $trash in it.
+#
+######
+my @trash = ("Each undeclared identifier",
+	     "At global scope:",
+	     "At top level:",
+#	     "In file included from",
+	     "warnings being treated as errors");
+
+sub first_template_argument {
+    my $t = shift;
+    return $1 if ($t =~ /< (\w+ (?:$targs)?) /x);
+    return $t;
+}
+
+######
+#
+# Global substitutions
+#
+######
+
+sub globalsub {
+    s{allocator$targs}{allocator<>}g;
+    s{ \(first use this function\)}{}g;
+    s{_IO_([io])stream_withassign}{${1}stream}g;
+    s{, __nmstl_no_lock}{}g;
+    s{basic_string<char, string_char_traits<char>, __default_alloc_template<true, 0> >}{string}g;
+    s{, less$targs, allocator$targs >}{>}g;
+    s{, allocator<[^>]*> >}{>}g;
+    s{basic_string<char, char_traits<char>>}{string}g;
+    s{, deque<_Tp> >}{>}g;
+    s{(?:struct )?_Rb_tree_iterator($targs)}{"iterator over ".first_template_argument($1)}eg;
+    s{__gnu_cxx::__normal_iterator<$chars_or_targs, ($chars_or_targs)\s*>}{$1::iterator}g;
+
+    s{ptr<callbackfunc<(.+?)> >}{callback<$1>};
+    s{callback<(.+?)(?:, void)+>}{callback<$1>};
+}
+
+#####
+#
+# Error explanations
+#
+#####
+my %explain = (
+    "^default argument given" =>
+    "Default arguments may be provided only in class declarations (header files), ".
+    "not in implementations (*.cc or *.cpp files).",
+
+    "no match for \`basic_istringstream<.+>& >> (.+?)&'" =>
+    "You probably need to provide a serializer and deserializer for \\1.",
+
+    "no matching function for call to \`ptr<.+>::([^\(]*)" =>
+    "You probably need to use an arrow (->) instead of a dot(.) to access \\1'.",
+
+    "\`class ptr<.+>' has no member named \`(.+)\'" =>
+    "You probably need to use an arrow (->) instead of a dot(.) to access \\1'.",
+    );
+
+######
+#
+# Namespaces
+#
+######
+my @namespaces = qw(std nmstl NMSTL SLAM::Medusa);
+
+my $context = 1;
+my $savedir = "$ENV{HOME}/.wtf/save";
+
+/`/;
+
+##################################################################
+
+use Term::ANSIColor qw(:constants);
+use Text::Wrap;
+
+my $count = 0;
+sub save {
+    if ($count == 0) {
+        if (!-e $savedir) {
+            system "mkdir","-p",$savedir and
+                die "Unable to mkdir $savedir";
+        }
+
+        unlink $_ foreach (<$savedir/[0-9]*>);
+    }
+
+    open(SAVE, ">$savedir/$count");
+    print SAVE @_,"\n";
+    close(SAVE);
+
+    return $count++;
+}
+
+my $compiling_nmstl = (`pwd` =~ /nmstl/);
+sub stl_file {
+    my $file = shift;
+
+    return ($file =~ m{ stl_[^/]+$ }ix ||
+            (!$compiling_nmstl && $file =~ m{ nmstl/[^/]+$ }ix));
+}
+
+/`/;
+if (@ARGV == 0) {
+    print STDERR <<OUT;
+WTF?/C++ by Jon Salz <jsalz\@lcs.mit.edu>
+
+To use WTF, preface your compilation commands with "wtf", e.g.:
+
+    wtf g++ -c input.cc
+
+If you are using configure, go to the directory with your
+configure in it and type
+
+    wtf ./configure
+
+Or if you are just using make, try
+
+    wtf make
+OUT
+
+    exit 1;
+}
+/`/;
+
+if (@ARGV == 1 && $ARGV[0] =~ /^(\d+)$/) {
+    open(IN, "$savedir/$1") or die "Unable to open $savedir/$1";
+    print while(<IN>);
+    close(IN);
+    exit 0;
+}
+
+my @path = split("/", $ARGV[0]);
+my $prog = $path[$#path];
+
+{};
+
+
+if ($prog eq "configure") {
+    print "rm -f config.cache\n";
+    system "rm -f config.cache";
+
+    $ENV{CC} ||= "gcc";
+    $ENV{CXX} ||= "g++";
+
+    $ENV{CC} = "$0 $ENV{CC}";
+    $ENV{CXX} = "$0 $ENV{CXX}";
+
+    print STDERR "Setting CC=\"$ENV{CC}\", CXX=\"$ENV{CXX}\"\n";
+    $ARGV[0] = "./configure" if ($ARGV[0] eq "configure");
+    print STDERR "@ARGV\n";
+    exec @ARGV;
+    die "Unable to exec @ARGV: $!\n";
+}
+
+if ($prog eq "make") {
+    $ENV{CC} ||= "gcc";
+    $ENV{CXX} ||= "g++";
+
+    $ENV{CC} = "$0 $ENV{CC}";
+    $ENV{CXX} = "$0 $ENV{CXX}";
+
+    exec @ARGV;
+    die "Unable to exec @ARGV: $!\n";
+}
+
+my $compile = +(grep { /\.c/i } @ARGV) && (!grep { /^-E$/ } @ARGV);
+my $link = !$compile && grep { /^-l/ } @ARGV;
+
+if (!$compile && !$link) {
+    exec @ARGV;
+}
+
+pipe(CXX, CXXWRITE);
+my $kidpid = fork();
+if ($kidpid == 0) {
+    close(CXX);
+    # Dup STDERR to CXXWRITE
+    open(STDERR, ">&CXXWRITE");
+
+    my $progindex = (grep { $ARGV[$_] =~ /gcc|g[+][+]/ } (0..$#ARGV))[0] || 0;
+
+    splice(@ARGV, $progindex + 1, 0, "-fmessage-length=0");
+    exec(@ARGV);
+    die "Unable to exec $ARGV[0]: $!";
+};
+close(CXXWRITE);
+my $msg = join("", <CXX>);
+close(CXX);
+
+wait;
+my $status = $?;
+
+$SIG{CHLD} = sub { wait; };
+
+if ($msg =~ /^Unable to exec/) {
+    print STDERR $msg;
+    exit 1;
+}
+
+my $allid = save("@ARGV\n\n".$msg);
+
+# Unwrap lines
+$msg =~ s/\s*\n\s+/ /g;
+
+# Remove trash
+my $trash = join("|", map { quotemeta($_) } @trash);
+my @lines = grep { !/$trash/ } split(/\n/, $msg);
+
+# Eliminate duplicate lines
+my $last = undef;
+@lines = grep { my $l = $last; $last = $_; $_ ne $l } @lines;
+
+# Remove common namespaces
+my $namespaces = join("|", @namespaces);
+@lines = map { s/\b(?:$namespaces):://g; $_ } @lines;
+
+# Apply global substitutions
+@lines = map { globalsub; $_ } @lines;
+
+@lines = map { { 'TEXT' => $_ } } @lines;
+
+foreach my $l (@lines) {
+    $l->{TEXT} =~ s@^([^ :]+):(?:(\d+):(?:(\d+):)?)? @ $l->{FILE} = $1; $l->{LINE} = $2 if $2; $l->{COL} = $3 if $3; "" @e;
+}
+
+my $func = undef;
+my @inst = ();
+my @incl = ();
+my @out = ();
+
+for (my $i = 0; $i < @lines; ++$i) {
+    my $l = $lines[$i];
+
+    next if ($i+1 < @lines && $lines[$i+1] eq $l);
+
+    # Cascade indented lines
+    if ($i+1 < @lines &&
+        $lines[$i+1]->{TEXT} !~ /instantiated from here|overriding/ &&
+        $lines[$i+1]->{TEXT} =~ s/^(?:warning: )? \s+//)
+    {
+        $lines[$i+1]->{TEXT} = $l->{TEXT}." ".$lines[$i+1]->{TEXT};
+        next;
+    }
+
+    if ($l->{TEXT} =~ /In file included from/) {
+        while ($l->{TEXT} =~ /from ([^:]+):(\d+)/g) {
+            push(@incl, { FILE => $1, LINE => $2 });
+        }
+    } elsif ($l->{TEXT} =~ /In [a-z ]+? \`(.+?)\':/) {
+        $func = $1;
+    } elsif ($l->{TEXT} =~ /instantiated from/) {
+        push(@inst, { FILE => $l->{FILE}, LINE => $l->{LINE} });
+    } else {
+        $l->{FUNC} = $func if (defined($func));
+        $l->{INCLUDE} = [ @incl ];
+
+        if ($lines[$i]->{TEXT} =~ s/the following virtual functions are abstract:/%%%/) {
+            my $l = $lines[$i];
+            my @virt = ();
+
+            while ($i+1 < @lines && $lines[$i+1]->{TEXT} =~ /^\s/) {
+                ++$i;
+                push(@virt, $lines[$i]->{TEXT});
+            }
+
+            my $id = save(join("\n", @virt));
+            $l->{TEXT} =~ s/%%%/@virt == 1 ? "one virtual function is abstract" : @virt." virtual functions are abstract"/e;
+            $l->{AUX} = "wtf $id for details";
+        }
+
+        if ($i+1 < @lines && $lines[$i+1]->{TEXT} =~ /^(?:\w+: )?(in passing argument.*)$/) {
+            $l->{TEXT} .= " $1";
+            ++$i;
+        }
+
+        if ($i+1 < @lines && $lines[$i+1]->{TEXT} =~ s/^(?:\w+: )?candidate(?: is|s are)?: //) {
+            $l->{CAND} = [ $lines[$i+1]->{TEXT} ];
+            ++$i;
+            while ($i+1 < @lines && $lines[$i+1]->{TEXT} =~ s/^(?:error: )?\s{11,}//) {
+                ++$i;
+                push(@{$l->{CAND}}, $lines[$i]->{TEXT});
+            }
+
+            my $id = save(join("\n", @{$l->{CAND}}));
+
+            $l->{AUX} = scalar(@{$l->{CAND}})." candidate".(@{$l->{CAND}} == 1 ? "" : "s")."; wtf $id for details";
+        }
+
+        if ($i+1 < @lines && $lines[$i+1]->{TEXT} =~ /after previous specification in/) {
+            ++$i;
+        }
+
+        if ($i+1 < @lines && $lines[$i+1]->{TEXT} =~ /within this context/) {
+            $l->{FILE} = $lines[$i+1]->{FILE};
+            $l->{LINE} = $lines[$i+1]->{LINE};
+            ++$i;
+        }
+
+        # Skip "no match" lines with same file/line
+        if (!($i+2 < @lines && $lines[$i+2]->{TEXT} =~ /candidates/)) {
+            while ($i+1 < @lines &&
+                   $lines[$i+1]->{FILE} eq $l->{FILE} &&
+                   $lines[$i+1]->{LINE} == $l->{LINE}) {
+                ++$i;
+            }
+        }
+
+        if (stl_file($l->{FILE})) {
+            # Damn, it's in STL.  Find the last "instantiated from"
+            # not in STL, if any
+
+            my @nonstl = grep { !stl_file($_->{FILE}) } @inst;
+            if (@nonstl) {
+                $l->{FILE} = $nonstl[0]->{FILE};
+                $l->{LINE} = $nonstl[0]->{LINE};
+            }
+        }
+        $func = undef;
+        @inst = ();
+        @incl = ();
+        push(@out, $l);
+
+        # Skip "indented" lines
+        while ($i+1 < @lines && $lines[$i+1]->{TEXT} =~ s/^\s+//) {
+            $l->{TEXT} .= " $lines[$i+1]->{TEXT}"
+                if ($lines[$i+1]->{TEXT} =~ /^overriding/);
+
+            ++$i;
+        }
+    }
+}
+@lines = @out;
+
+if (@lines) {
+    $ENV{"TERM"} = "vt100" if ($ENV{"TERM"} =~ /^xterm/);
+
+    if ($ENV{"WTF_NO_LESS"}) {
+        open(OUT, "|cat");
+    } else {
+        open(OUT, "|less -RF");
+    }
+
+    print OUT RESET;
+
+    print OUT BOLD, RED, "Linker errors follow.  This mode is untested; type \"wtf $allid\" for the original output.", RESET, "\n\n" if ($link);
+
+    foreach my $l (@lines) {
+
+#    foreach my $k (sort keys %$l) {
+#	print "$k: \"$l->{$k}\"\n";
+#    }
+#    print "\n";
+
+        if ($l->{TEXT} =~ /deprecated or antiquated/ &&
+            $l->{FILE} =~ /backward_warning/ &&
+            @{$l->{INCLUDE}} > 1)
+        {
+            $l->{FILE} = $l->{INCLUDE}->[1]->{FILE};
+            $l->{LINE} = $l->{INCLUDE}->[1]->{LINE};
+            $l->{COL} = undef;
+
+            my $head = $l->{INCLUDE}->[0]->{FILE};
+            $head =~ s/^.+\///;
+
+            $l->{TEXT} = "You are using the deprecated header <$head>.  To eliminate this warning, use ";
+            if ($head =~ s/strstream/sstream/ || $head =~ s/\.h$//) {
+                $l->{TEXT} .= "<$head> instead ";
+            } else {
+                $l->{TEXT} .= "an ANSI-standard header file ";
+            }
+            $l->{TEXT} .= "or use the -Wno-deprecated compiler flag.";
+        }
+
+        print OUT BOLD, RED;
+        print OUT wrap("", "", $l->{TEXT}), RESET;
+        print OUT " ($l->{AUX})" if ($l->{AUX});
+        print OUT "\n";
+
+        my @info = ();
+
+        my $file = $l->{FILE};
+        $file =~ s{ ([^/]+)$ }{ BLUE.BOLD.$1.RESET.RED }ex;
+
+        push(@info, "in $file") if ($file);
+        push(@info, "line $l->{LINE}") if ($l->{LINE});
+        push(@info, "column $l->{COL}") if ($l->{COL});
+        print OUT RED,"",join(", ", @info),RESET,"\n" if (@info);
+        print OUT RED,"in $l->{FUNC}",RESET,"\n" if ($l->{FUNC});
+
+        if ($context) {
+            if ($l->{LINE}) {
+                open(IN, $l->{FILE}) and do {
+                    my @flines = ("", map { chomp; s/\t/        /g; $_ } <IN>);
+                    foreach ($l->{LINE}-2 .. $l->{LINE}+2) {
+                        next if ($_ <= 0);
+                        print OUT BOLD if ($_ == $l->{LINE});
+                        print OUT $_, "> ",$flines[$_],"\n";
+                        print OUT RESET if ($_ == $l->{LINE});
+                    }
+                    close(IN);
+                };
+            }
+        }
+
+        while (my ($key, $value) = each %explain) {
+            my @matches = ();
+            if (@matches = ($l->{TEXT} =~ /$key/)) {
+                $value =~ s/\\(\d+)/$matches[$1-1]/eg;
+                print OUT BLUE,BOLD,wrap("", "", "N.B.: $value"),RESET,"\n";
+            }
+        }
+
+        print OUT "\n";
+    }
+
+    close OUT;
+}
+
+exit ($status >> 8);

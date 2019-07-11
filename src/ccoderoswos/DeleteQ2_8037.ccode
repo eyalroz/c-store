@@ -1,0 +1,37 @@
+
+
+	// The following 2 lines of code will be replaced by
+	// WOSManager* lpWOSManager = CatalogInstance::getCatalog()->getWOSManager(m_sProjection);
+	string sColumnAny = CatalogInstance::getCatalog()->getPrimaryColumnName("Q2_projection");
+	WOSManager* lpROS_WOSManager = CatalogInstance::getCatalog()->getWOSManager(sColumnAny);
+	DeleteOperator* lpDeleteOp = new DeleteOperator(lpROS_WOSManager);
+
+//WOS OPERATORS:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM3 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_shipdate", "Q2_l_shipdate");
+
+StopWatch deleteTimer;
+deleteTimer.start();
+cout << "delete starting..." << endl;
+
+	Operator* lp_WOS3 = new IntDataSource(lp_WOSAM3, true, false);
+	( (DataSource*) lp_WOS3)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_WOS3)->changeRHSBinding(8037);
+//DELETE WOS FROM PROJECTION: 
+	lpDeleteOp->deleteTuple(lp_WOS3, false);
+
+
+//ROS OPERATORS:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM3 = CatalogInstance::getCatalog()->getROSAM("Q2_l_shipdate");
+	Operator* lp_ROS3 = new RLEDataSource(lp_AM3, true);
+	( (DataSource*) lp_ROS3)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_ROS3)->changeRHSBinding(8037);
+//DELETE ROS FROM PROJECTION: 
+	lpDeleteOp->deleteTuple(lp_ROS3, true);
+
+cout << "delete took: " << deleteTimer.stop() << " ms" << endl;

@@ -1,0 +1,5 @@
+. Compile:
+  make
+
+. Run:
+  run input output

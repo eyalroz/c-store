@@ -1,0 +1,20 @@
+#
+# Makefile for playground
+#
+CC      = g++
+CFLAGS  = -O0 -g3 -Wall -c -Wno-deprecated -fmessage-length=0 -pg
+OPTS    = -pg -Wl,--export-dynamic -Wl,--demangle
+LDFLAGS =
+SOURCES = doFlushCache.cpp
+OBJECTS = $(SOURCES:.cpp=.o)
+EXECUTABLE= doFlushCache
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS) 
+	$(CC) $(OBJECTS) -o $@ $(OPTS)
+	rm -f $(OBJECTS)
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+.PHONY: all

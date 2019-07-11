@@ -1,0 +1,17 @@
+
+//ROS OPERATORS:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM3 = new ROSAM( "D1_RLE_SHIPDATE" , 2);
+	Operator* lp_ROS3 = new RLEDataSource(lp_AM3, true);
+	( (DataSource*) lp_ROS3)->setPredicate(new Predicate((Predicate::PredicateType) 4));
+	( (DataSource*) lp_ROS3)->changeRHSBinding(9000);
+//OPERATOR: Count
+	Operator* lp_ROS2 = new Count(lp_ROS3, 0, lp_ROS3, 0);
+
+//OUPUT THE RESULTS:
+	Operator* srcs[1] = {lp_ROS2};
+	int numColumns[1] = {2};
+	BlockPrinter* bPrint = new BlockPrinter(srcs, numColumns, 1, "QueryX.out");
+	bPrint->printColumns();

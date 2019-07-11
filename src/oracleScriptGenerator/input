@@ -1,0 +1,14 @@
+/home/oracle/fillcache.sh 	# First line: Run this file to flush cache
+sqlplus ds20/scale20		# Second line: sqlplus command and username/pass
+scale20 			# Third line: scale to show in the output file
+1 				# Forth line: suffix of the output files
+/home/nga/hd2/queries/ds/ 	# Fifth line: input folder of sql files
+/home/nga/hd2/queries/ds/out/ 	# Sixth line: output folder
+dsq5_2F_10.sql 			# Seventh to the end: sql input file names
+dsq5_2F_1.sql
+dsq5_2F_2.sql
+dsq5_2F_3.sql
+dsq5_2F_4.sql
+dsq5_2F_5.sql
+dsq5_2F_6.sql
+dsq5_2F_7.sql

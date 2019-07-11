@@ -1,0 +1,38 @@
+SHELL = /bin/sh
+
+CC = $(WTF) g++
+
+# Executables
+EXEC = parser
+
+SUBDIRS = Expressions
+
+# For every new .cpp file created, you must add a corresponding .o to OBJS
+OBJS = ParserMain.o TVariable.o Expression.o Query.o BExpression.o
+
+CFLAGS = -g
+
+# We always depend on EXEC.
+all: $(OBJS)
+#	cp *.o ./Debug
+	@for i in $(SUBDIRS); do \
+	echo "make all in $$i..."; \
+	(cd $$i; make all); done
+
+$(EXEC) : $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
+
+# All .C files depend on their headers
+%.cpp:  %.h
+
+# We compile .C files to their corresponding .o in OBJS.
+%.o:%.cpp
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm -f $(EXEC)
+	rm -f *.o
+	@for i in $(SUBDIRS); do \
+        echo "make clean in $$i..."; \
+        (cd $$i; make clean); done
+

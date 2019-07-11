@@ -1,0 +1,349 @@
+CStore version 0.2 October 2006
+Active code authors:
+Daniel Abadi (dna@mit.edu)
+Alex Rasin (alexr@cs.brown.edu)
+Nga Tran (nga@cs.brandeis.edu)
+
+Given that C-Store is a university research project and we currently have no staff members doing generic code maintenance and testing, C-Store has progressed in the past year only in pieces, and only by students who need to do so for paricular research interests. For this reason, some parts of the systems (like the query executer) see large improvements over the last release while other pieces (e.g. tuple mover and WOS) have not been touched at all compared with the last release.
+
+Since the WOS is so rudimentory compared with the ROS (WOS stand for write-optimized system, ROS for read-optimized system - see the original C-Store paper) we have decided for this release to have the plan generator only generate plans that query the ROS (and not the WOS). Thus, this release of C-Store is a "pure" read-only column-store with no way to insert or update data other than to recreate the ROS data files. This is still sufficient to do research on certain aspects column-oriented systems. However the version 0.1 release WOS, insert and delete code is still included in case you wish to extend it for more complete research into column-oriented DBMSs.
+
+You will find that this new release will be able to handle a wider variety of queries without crashing (or producing incorrect answers) compared with the previous release. However this system is still nowhere near a complete DBMS and the query executer still is known not to work for many queries. If you want to do real column-oriented DBMS querying, we recommend Vertica (http://www.vertica.com) as a good commerical DBMS.
+
+This release also contains a column-creator so that you can run C-Store on your own data (rather than the TPC-H data we supply). For this release, the column-creater only works for integer data and works as follows:
+
+1) Create a space delimited file with each column in the file representing a column in your table or "C-Store projection". For example, in the cstore/data directory, there exists the data file lshipdate.sorted.tiny with the following contents:
+8036 221
+8036 1693
+8036 3697
+8037 5862
+8037 6428
+8037 6982
+8038 7486
+8038 9194
+8038 10372
+8038 11056
+
+This is a two column projection; the first column is an integer representation of lineitem.shipdate, the second column is lineitem.suppkey. You may have up to 256 columns in your projection (this is an arbitrary number - if you want more simply change the code in cstore/src/UnitTests/ProjMaker.cpp).
+
+2) Run the C-Store Projection/Column-Maker. From the cstore/src directory, run:
+./cstoreqptest 0 projectionMaker.cnf global.cnf <data-file>
+
+e.g. for the above example, you'd run 
+./cstoreqptest 0 projectionMaker.cnf global.cnf ../data/lshipdate.sorted.tiny
+
+follow the command line instructions from there. As soon as you are finished with this process, the projection will be queryable in C-Store.
+
+Note: for non-integer data, you will still have to create/query these columns by hand. This is an artifact of the query executer being able to handle generic type data but our not updating the plan generator to handle generic type data at the time of the release. The next release will have this fixed.
+
+CStore version 0.1 July 2005
+Active code authors:
+Daniel Abadi (dna@mit.edu)
+Xuedong Chen (xuedchen@cs.umb.edu)
+Tien Hoang (hoangt@brandeis.edu)
+Edmond Lau (edmond@mit.edu)
+Velen Liang (vliang@csail.mit.edu)
+Alex Rasin (alexr@cs.brown.edu)
+Nga Tran (nga@cs.brandeis.edu)
+
+To compile and run the code, see the README file.
+
+This document describes the features of the CStore paper (CStore: A
+Column-Oriented DBMS, Stonebraker et. al. included as vldb.pdf in these
+docs) that are included in this release. It also gives an overview of
+what can be input to the system, and how this translates to code that
+is run. A detailed overview of the query executer, some of the thinking
+behind it, and the data structures used is given in Miguel Ferreira's
+thesis provided in a separate file (thesis.pdf). An overview of the plan
+generator can be found in: PlanGenerator_20050628.doc. The other pieces
+of the system (the catalog and the tuple mover) have brief overviews
+that are given in this document. 
+
+What we support:
+
+We have ROS, WOS, and a tuple mover as described in the paper. WOS is
+physically laid out in memory as a row store in the release (there's
+a flag in the constructor that allows it to be laid out as a column store -
+however this feature is not fully functional after last batch of changes).
+ROS is, of course, a column store. WOS is uncompressed, whereas ROS has 2
+compression types that are fully tested and working well (type 1 and type 4
+from the paper), a bunch of extra compression types that we were playing
+around with for experimentation but we haven't touched in more than a few
+months and may or may not work well (null suppression, lzo - a variant of
+lempel ziv, dictionary, and rle II - which is run length encoding without
+encoding start position), and type 2 compression from the paper (bit-string
+or "delta-pos" encoding) but this was incompletely implemented by a member
+of the team who has since left the project and to our knowledge this is
+buggy. So while type 1 (RLE) and type 4 (uncompressed) are the only ways
+to store data on disk that are fully functional, other compression types
+are within epsilon of working. To add a new compression type, all that has
+to be done is to implement the DataSource for it, the Block (and Block
+Writer) for it, and add the encoder and decoder. So the system is fairly
+extensible for new compression types.
+
+The tuple mover is not fully integrated into the system, in that it must be
+run externally to the query system. This is described later in this document.
+
+This release is not distributed (cstore runs on one node only). Further,
+there is only one projection per query since we did not implement join
+indicies for the release. There is no concept of a transaction, epoch,
+or timestamp authority. There is no query parallelism - queries must be
+run sequentially (this includes the tuple mover).
+
+The following operators from the paper exist:
+
+- Aggregate Operators (sum, avg, count, max, min)
+- Decompress (though this is not a physical operator in our system - any
+operator can decompress input when it finds it necessary)
+- Mask (again, not a physical operator - this is done through position
+filtering in data sources)
+- Select (again, not a physical operator - this is done through predication
+in data sources - though down the road this may need to also be a separate
+operator)
+- Bit-string operators (BAnd, BNot, BOr)
+- NLJoin (but only when the inner table fits in memory, and can only run on
+uncompressed input)
+- Project (again, not needed to be a physical operator)
+
+The following operators exist, but aren't listed in the paper:
+
+- MergeSortedGroups: takes sorted results of an aggregation operation and
+merges them (useful for merging ROS and WOS results)
+- Union: takes non-aggregated results of ROS and WOS and merges them. There
+are four versions of Union, of which only one is implemented in this
+release. See Union.doc for a more detailed account of Union
+- Insert and Delete operators (see below in this document)
+- BlockPrinter: This is the root node of any query tree - it prints the
+results of a query to screen or to a file
+- ColumnExtracter: This reads a text file and converts it to binary data for
+use in creating BerkeleyDB ROS files. This will not be used by the system
+once the system exclusively builds itself from WOS, though it might be
+useful in a varied form for storing temporary results.
+
+The following operators are listed in section 8 of the paper, but aren't
+implemented in this release:
+- Concat (because we only have one projection per table)
+- Permute (again because we don't have join indicies)
+- Sort
+
+The queries presented in section 9 of the paper are implemented in
+Query1.cpp through Query7.cpp. The correct answers for these queries are
+listed in Query1.ans through Query7.ans. Query1U.cpp through Query7U.cpp
+code the same query plans, but operating only on uncompressed data.
+
+The data received through the make data command is identical data we used
+for the paper.
+
+The rest of this document overviews various pieces of the release (except
+the query executor which is given in thesis.pdf and the plan generator
+which is given in PlanGenerator_20050628.doc).
+
+Tuple Mover:
+
+The main function of the tuple mover is to merge out the WOS tuples to the
+corresponding ROS projections. The WOS is relatively trivial in size
+compared with ROS, and is kept in memory all the time. The Tuple Mover
+is invoked when the number of WOS tuples is above a certain threshold.
+
+Tuple Mover Merger Algorithm:
+
+When the Tuple Mover does a merge-out for the given projection, the WOS
+tuples must be retrieved in the same sort order as that projection. The
+projection can have multiple columns in its sort key. The current
+implementation supports multiple-column sort keys where the first column is 
+in Type1 encoding and the remaining are in Type1A (RLE encoded, but not
+sorted, so it's possible to have more than one triple per value) except the
+last one can be either Type1A or Type4 (uncompressed integers, but sorted
+for each value of the sort-key columns to its left, a temporary placeholder
+for Type1A.)
+The Tuple Mover iterates through the WOS tuples in sort order and merges
+each of them into the new version of the ROS projection column by
+column. Thus there is one pointer for each ROS column. These pointers are
+advanced simultaneously. In order to find the exact insert position in
+the new ROS for given WOS tuple, the sort key columns must be processed
+first. Through the sort key column processing, the final insert position is
+determined and the Tuple Mover uses that insert position for the other
+non-sort-key columns' merge-out. 
+
+How to run Tuple Mover Merger?
+
+To merge the D6 projection (the lineitem fact table), simply run:
+./cstoreqptest 0 tm.cnf global.cnf
+
+After which, you can run:
+./cstoreqptest
+and issue queries on the resulting merged table, e.g.:
+
+
+SELECT MO_D6_l_shipdate, COUNT (*)
+FROM MO_D6.data
+WHERE MO_D6_l_shipdate > 9000
+GROUP BY MO_D6_l_shipdate;
+
+or
+
+SELECT MO_D6_l_suppkey, COUNT (*)
+FROM MO_D6.data
+WHERE MO_D6_l_shipdate = 9000
+GROUP BY MO_D6_l_suppkey;
+
+The major class for Tuple Mover is called TMMerger under the C-Store CVS
+CSTORE/cstoreqptest/src/TM directory. It provides a simple constructor,
+which takes only a CatalogInstance pointer and a projection name
+string. After the TMMerger is instantiated, a simple API
+TMMerger::doMerge() will start the merge-out process. After the merge-out
+you can get the statistics by calling printProfile().  
+
+Once there is a driver (or manager) that can detect the WOS threshold and
+has the access to the CatalogInstance, then it can easily construct the
+TMMerger to merge-out the WOS. 
+After the merge-out the driver will find the best time for switching the
+newly merged ROS project to the main Catalog and dump the old ROS and
+remove those merged WOS tuples. As current setup the merge-out ROS BDB
+tables has "_MO" prefix. As noted above, there currently is no such driver
+for the tuple mover.
+
+The Tuple Mover Merger also consists of other helper classes, which are
+very straight forward. There is a TmMergerTest class under
+CSTORE/cstoreqptest directory, which handles all sorts of unit tests. For
+how to perform unit tests please consult the README.
+
+What hadn't been done yet?
+
+Currently the merge-out does not deal with the foreign key order, does not
+handle type2 and type3 encoding column merge-out. There is a new design for
+merge-out of WOS and ROS column by column instead of looping through all
+columns at the same time, but this has not not yet been implemented.
+
+Plan Generator:
+
+Plan generator documentation can be found in: PlanGenerator_20050628.doc
+
+Catalog:
+
+The catalog maintains an overview of every projection in the RuntimeData
+directory. At all times there exists a single static instance of the
+catalog. Any component (TupleMover, PlanGenerator, etc) that wishes
+to access ROS or WOS can request an access method (ROSAM for ROS access,
+WOSAM for WOS access and DVAM for DeleteVector both for ROS and WOS)
+based on projection and column name.
+
+To add a new projection user must do the following:
+
+Change the size of the array PROJECTIONS and add the name of
+newProjection to that static array. In the constructor, add the desired
+columns using:
+new MetaColumn( name, type, compression type, position, bool sortorder?)
+CStore will look for corresponding BerkeleyDB data files in local
+RuntimeData directory.
+
+In order to support WOS operation, the user needs to create a WOSManager
+with the name of a data file from which WOS can be loaded. Note that WOS
+will record a .TUPLES file for future use, to avoid loading input from
+the text file on the disk. You will also need to  add a mapping in
+_wosManager, so that this WOSManager can be looked up in the catalog.
+Current implementation also requires that a WOSManager mapping is made
+for every column in the projection (so that any column name leads to the
+same shared WOS).
+
+DeleteVectors are supported, but loading or storing their status on disk
+is not. Therefore the CStore prototype always starts out with a blank
+DeleteVector.
+
+
+INSERT and DELETE Operation
+
+INSERT
+	Currently we support one forms of insertion (to WOS).
+
+  	INSERT Syntax #1:
+ 	 	INSERT INTO table-name [(column-name1 [,column-name2]...)] 
+		VALUES (insert-value1 [, insert-value2]...)
+				
+		InsertOperator inserts one row at a time. So the idea is
+		to obtain a storage key for the new row, then populate the 
+		fields at the end of the WOS table by calling appendTuple
+		using the storage key. 
+
+The Plan generator for Insert takes queries of this forms and:		
+
+1. constructs a WOSManager
+2. constructs an InsertOperator
+3. calls InsertOperator::initTuple to get storage key
+4. calls InsertOperator::populateField to populate each field
+5. calls InsertOperator::appendTuple to insert this row
+
+	Note this next version of INSERT is NOT CURRENTLY SUPPORTED, but will
+  	be in the next release.
+  	INSERT Syntax #2:  
+      		INSERT INTO table-name [(column-name1 [,column-name2]...)] 
+		VALUES (select-statement)
+
+		InsertOperator provides appendColumns to support syntax #2.
+		Say we have SQL statement 
+			INSERT INTO S (s1, s2, s3)
+			VALUE SELECT t2, t3, t1
+			      FROM T
+
+		In this case we have three input columns t2, t3, t1
+		that are inserted into to the columns s1, s2, s3 of the
+		projection S.
+
+The Plan generator for this insert takes queries of this forms and:		
+1. constructs an array of data source pointers that hold input data sources t1, t2, t3 (Operator* dataSource[] = {ds1, ds2, ds3})
+2. constructs a array of pointers that hold indices of column number in S(  int columnIndex[] = {3, 1, 2})
+3. calls appendColumns
+
+DELETE
+
+Two things need to be done to support deletion:
+
+1. Tuples must be marked as deleted in the delete vector of the projection
+2. A mechanism must be added to the query plan to filter out deleted entries. 
+
+Currently we use two delete vectors(list of deleted positions), one for ROS
+and one for WOS for each projection. So deletion is accomplished by adding the
+deleted position to the delete vectors.  We have implemented item 1 but do not
+currently support item 2 (e.g., the plan generator has not been modified to
+filter according to the tuples in the deletion vector, though the test file
+SelectDV.cpp shows an example of a plan that does this.
+
+Data structure: 
+
+Since deletion is projection-wise and the majority of the access
+methods/operators are column-wise, we devised DVAM, namely delete vector
+access method to help support deletion.
+
+Delete Tuples:
+To delete columns/rows from a projection, DeleteOperator provides a couple
+methods:
+
+1.void deleteTuple(int position, bool isROS) 
+       this just adds the position to the delete vector.
+2.void deleteTuple(Operator* inOp, bool isROS)
+       this method takes an input data source(inOP) (usually with some
+       predicate on it), iterate through the returned (value, position)
+       pairs the data source returns, and adds the positions to the delete
+       vector. 
+3.void deleteProjection()
+       deletes the whole projection.
+4.void deleteByPositionList(Operator* pList, bool isROS)
+       this method takes a position list and marks the positions that are being deleted.
+
+Filter Deleted Tuples:
+
+	
+Thanks to DVAM/DVConverter, delete vectors are just like regular columns.
+To do position filtering using the delete vector - construct an IntDataSource
+like this: (example is for ROS delete vector) 
+
+     IntDataSource* dsDVROS =  new IntDataSource ( wosMgr->getDVAM(true),
+						   true,  //sorted
+						   false,  //isROS );
+
+This data source dsDVROS contains a list of positions that are being deleted
+(again, this is just logical - TM will take care of physically removal of
+tuples). The data source positions are then passed to a BNot operator to
+generate the positions that are not deleted, and this list is sent to a
+positionFilter of a DataSource to get the results values of non deleted
+entries.

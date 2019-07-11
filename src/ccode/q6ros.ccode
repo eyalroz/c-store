@@ -1,0 +1,35 @@
+
+//ROS OPERATORS:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM5 = new ROSAM("D2_RLE_ORDERDATE", 2);
+	Operator* lp_ROS5 = new RLEDataSource(lp_AM5, true);
+	( (DataSource*) lp_ROS5)->setPredicate(new Predicate((Predicate::PredicateType) 4));
+	( (DataSource*) lp_ROS5)->changeRHSBinding(9000);
+//COPY:
+	Operator* lp_ROS4 = new BCopyOperator(lp_ROS5,  0, 2);
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM6 = new ROSAM("D2_UNCOMPRESSED_SUPPKEY", 1);
+	Operator* lp_ROS6 = new IntDataSource(lp_AM6, false, true);
+	((DataSource*) lp_ROS6)->setPositionFilter(lp_ROS4, 0);
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM8 = new ROSAM("D2_UNCOMPRESSED_SHIPDATE", 1);
+	Operator* lp_ROS8 = new IntDataSource(lp_AM8, false, true);
+	((DataSource*) lp_ROS8)->setPositionFilter(lp_ROS4, 1);
+//OPERATOR: Max
+	Operator* lp_ROS2 = new HashMax(lp_ROS8, 0, lp_ROS6, 0);
+	((HashAggregator*) lp_ROS2)->setHashFunction(new IdentityHashFunction(150000));
+	((HashAggregator*) lp_ROS2)->setHashTableSize(150000);
+
+//OUPUT THE RESULTS:
+	Operator* srcs[1] = {lp_ROS2};
+	int numColumns[1] = {2};
+	BlockPrinter* bPrint = new BlockPrinter(srcs, numColumns, 1, "QueryX.out");
+	bPrint->printColumns();

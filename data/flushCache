@@ -1,0 +1,2 @@
+cp lgFile lgFile2
+rm lgFile2

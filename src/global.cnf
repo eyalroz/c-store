@@ -1,0 +1,14 @@
+#Welcome to config file for unit test
+#The file works by placing the name of each variable on each line 
+#followed by its value
+# PLEASE NOTE : TAB is the separator
+
+BUILD_TABLES	0
+#BUILD_TABLES causes the BDB tables to be built as part of the query. This
+#will cause cstore to run for a few minutes rather than a few seconds.
+
+
+FORCE_REBUILD	1
+#FORCE_REBUILD causes the .1 file to be rebuilt even if it already exists.
+#If you don't know what it means, don't worry, just set this variable to 1
+#to be safe. This variable is only relevent when BUILD_TABLES is true.

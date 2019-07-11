@@ -1,0 +1,69 @@
+
+//ROS OPERATORS:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM5 = CatalogInstance::getCatalog()->getROSAM("Q5_o_orderdate");
+	Operator* lp_ROS5 = new RLEDataSource(lp_AM5, true);
+	( (DataSource*) lp_ROS5)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_ROS5)->changeRHSBinding(9000);
+//COPY:
+	Operator* lp_ROS4 = new BCopyOperator(lp_ROS5,  0, 2);
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM6 = CatalogInstance::getCatalog()->getROSAM("Q5_l_suppkey");
+	Operator* lp_ROS6 = new IntDataSource(lp_AM6, false, true);
+	((DataSource*) lp_ROS6)->setPositionFilter(lp_ROS4, 0);
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM8 = CatalogInstance::getCatalog()->getROSAM("Q5_l_shipdate");
+	Operator* lp_ROS8 = new IntDataSource(lp_AM8, false, true);
+	((DataSource*) lp_ROS8)->setPositionFilter(lp_ROS4, 1);
+//OPERATOR: Max
+	Operator* lp_ROS2 = new HashMax(lp_ROS8, 0, lp_ROS6, 0);
+	((HashAggregator*) lp_ROS2)->setHashFunction(new IdentityHashFunction(150000));
+	((HashAggregator*) lp_ROS2)->setHashTableSize(150000);
+
+//WOS OPERATORS:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM5 = CatalogInstance::getCatalog()->getWOSAM("Q5_o_orderdate", "Q5_o_orderdate");
+	Operator* lp_WOS5 = new IntDataSource(lp_WOSAM5, true, false);
+	( (DataSource*) lp_WOS5)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_WOS5)->changeRHSBinding(9000);
+//COPY:
+	Operator* lp_WOS4 = new BCopyOperator(lp_WOS5,  0, 2);
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM6 = CatalogInstance::getCatalog()->getWOSAM("Q5_l_suppkey", "Q5_l_suppkey");
+	Operator* lp_WOS6 = new IntDataSource(lp_WOSAM6, true, false);
+	((DataSource*) lp_WOS6)->setPositionFilter(lp_WOS4, 0);
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM8 = CatalogInstance::getCatalog()->getWOSAM("Q5_l_shipdate", "Q5_l_shipdate");
+	Operator* lp_WOS8 = new IntDataSource(lp_WOSAM8, true, false);
+	((DataSource*) lp_WOS8)->setPositionFilter(lp_WOS4, 1);
+//OPERATOR: Max
+	Operator* lp_WOS2 = new HashMax(lp_WOS8, 0, lp_WOS6, 0);
+	((HashAggregator*) lp_WOS2)->setHashFunction(new IdentityHashFunction(150000));
+	((HashAggregator*) lp_WOS2)->setHashTableSize(150000);
+
+//MERGE ROS AND WOS:
+//MERGE SORTED GROUP:
+	Operator* lp_Merge2 = new MergeSortedGroups(lp_ROS2, lp_WOS2, 2, 0); 
+	((MergeSortedGroups*) lp_Merge2)->setMergeOp(new MergeMaxOp());
+
+//OUPUT THE RESULTS:
+	Operator* srcs[1] = {lp_Merge2};
+	int numColumns[1] = {2};
+	BlockPrinter* bPrint = new BlockPrinter(srcs, numColumns, 1, "QueryX.out");
+	bPrint->printColumns();

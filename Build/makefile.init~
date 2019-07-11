@@ -1,0 +1,55 @@
+WTF:=./wtf
+CC:=$(WTF) g++
+
+CSTORE_INCLUDE := src
+SLEEPYCAT_DIRECTORY := /usr/local/BerkeleyDB.4.2
+SLEEPYCAT_INCLUDE := $(SLEEPYCAT_DIRECTORY)/include/
+SLEEPYCAT_LIB := $(SLEEPYCAT_DIRECTORY)/lib
+LZO_LIB := /home/dna/huff/lzo-1.08/src/.libs
+
+CFLAGS  := -O0 -g3 -Wall -c -Wno-deprecated -fmessage-length=0
+#override CFLAGS with optimization flags if so desired
+ifdef __CSTORE_OPTIMIZED__
+	CFLAGS  := -O3 -Wall -c -Wno-deprecated -fmessage-length=0 -DCSTORE_NOLOG
+endif
+#override CFLAGS with gprof flags
+ifdef __CSTORE_GPROF__
+	CFLAGS  := -pg -g -O3 -Wall -c -Wno-deprecated -fmessage-length=0 -DCSTORE_NOLOG
+endif
+
+RULEFLAGS := -MM -MG -P -w 
+IFLAGS 	:= -I$(SLEEPYCAT_INCLUDE) -I$(CSTORE_INCLUDE) 
+LFLAGS 	:= -L$(SLEEPYCAT_LIB) -L$(LZO_LIB)
+OPTS    := -Wl,--demangle
+LIBS	:= -ldb-4.2 -ldb_cxx-4.2  -lpthread -llzo
+#override OPTS with gprof flags
+ifdef __CSTORE_GPROF__
+	OPTS    := -pg -Wl,--demangle
+endif
+
+# for PAPI (only available on Shamrock)
+ifdef __CSTORE_PAPI__
+	CFLAGS += -DCSTORE_PAPI
+	PAPI_HOME = /usr/local/src/papi-3.0.8.1
+	IFLAGS += -I$(PAPI_HOME)/src/perfctr-2.6.x/usr.lib 
+	IFLAGS += -I$(PAPI_HOME)/src/perfctr-2.6.x/linux/include 
+	IFLAGS += -I$(PAPI_HOME) 
+	IFLAGS += -I/usr/include 
+	LFLAGS += $(PAPI_HOME)/src/libpapi.a
+endif
+
+# on MacOSX make often uses tcsh instead of bash, which doesn't define
+# the OSTYPE environment variable; if that's the case, define it
+ifndef OSTYPE
+        OSTYPE := $(shell uname)
+endif
+# however, uname returns "Darwin" instead of "darwin" or "darwin6.0"
+# so let's get things into lower case
+# this is a hack, but I don't know any other way to do this strictly
+# within make (ie, not requiring some shell feature or other program)
+OSTYPE := $(subst Darwin,darwin,$(OSTYPE))
+
+# sometimes OSTYPE=darwin6.0, not "darwin": so use findstring
+ifeq (darwin, $(findstring darwin,$(OSTYPE))) # If OS is Mac
+        LIBS := $(LIBS) -bind_at_load
+endif

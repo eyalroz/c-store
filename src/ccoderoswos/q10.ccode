@@ -1,0 +1,200 @@
+
+//ROS OPERATORS:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM4 = CatalogInstance::getCatalog()->getROSAM("Q2_l_suppkey");
+	Operator* lp_ROS4 = new IntDataSource(lp_AM4, false, true);
+	( (DataSource*) lp_ROS4)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_ROS4)->changeRHSBinding(42);
+//COPY:
+	Operator* lp_ROS3 = new BCopyOperator(lp_ROS4,  0, 8);
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM5 = CatalogInstance::getCatalog()->getROSAM("Q2_l_extendedprice");
+	Operator* lp_ROS5 = new IntDataSource(lp_AM5, false, true);
+	((DataSource*) lp_ROS5)->setPositionFilter(lp_ROS3, 0);
+
+//WOS OPERATORS:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM4 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_suppkey", "Q2_l_suppkey");
+	Operator* lp_WOS4 = new IntDataSource(lp_WOSAM4, true, false);
+	( (DataSource*) lp_WOS4)->setPredicate(new Predicate((Predicate::PredicateType) 2));
+	( (DataSource*) lp_WOS4)->changeRHSBinding(42);
+//COPY:
+	Operator* lp_WOS3 = new BCopyOperator(lp_WOS4,  0, 8);
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM5 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_extendedprice", "Q2_l_extendedprice");
+	Operator* lp_WOS5 = new IntDataSource(lp_WOSAM5, true, false);
+	((DataSource*) lp_WOS5)->setPositionFilter(lp_WOS3, 0);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge5 = new Union(lp_ROS5, lp_WOS5, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM7 = CatalogInstance::getCatalog()->getROSAM("Q2_l_linenumber");
+	Operator* lp_ROS7 = new IntDataSource(lp_AM7, false, true);
+	((DataSource*) lp_ROS7)->setPositionFilter(lp_ROS3, 1);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM7 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_linenumber", "Q2_l_linenumber");
+	Operator* lp_WOS7 = new IntDataSource(lp_WOSAM7, true, false);
+	((DataSource*) lp_WOS7)->setPositionFilter(lp_WOS3, 1);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge7 = new Union(lp_ROS7, lp_WOS7, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM9 = CatalogInstance::getCatalog()->getROSAM("Q2_l_orderkey");
+	Operator* lp_ROS9 = new IntDataSource(lp_AM9, false, true);
+	((DataSource*) lp_ROS9)->setPositionFilter(lp_ROS3, 2);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM9 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_orderkey", "Q2_l_orderkey");
+	Operator* lp_WOS9 = new IntDataSource(lp_WOSAM9, true, false);
+	((DataSource*) lp_WOS9)->setPositionFilter(lp_WOS3, 2);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge9 = new Union(lp_ROS9, lp_WOS9, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM11 = CatalogInstance::getCatalog()->getROSAM("Q2_l_partkey");
+	Operator* lp_ROS11 = new IntDataSource(lp_AM11, false, true);
+	((DataSource*) lp_ROS11)->setPositionFilter(lp_ROS3, 3);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM11 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_partkey", "Q2_l_partkey");
+	Operator* lp_WOS11 = new IntDataSource(lp_WOSAM11, true, false);
+	((DataSource*) lp_WOS11)->setPositionFilter(lp_WOS3, 3);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge11 = new Union(lp_ROS11, lp_WOS11, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM13 = CatalogInstance::getCatalog()->getROSAM("Q2_l_quantity");
+	Operator* lp_ROS13 = new IntDataSource(lp_AM13, false, true);
+	((DataSource*) lp_ROS13)->setPositionFilter(lp_ROS3, 4);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM13 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_quantity", "Q2_l_quantity");
+	Operator* lp_WOS13 = new IntDataSource(lp_WOSAM13, true, false);
+	((DataSource*) lp_WOS13)->setPositionFilter(lp_WOS3, 4);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge13 = new Union(lp_ROS13, lp_WOS13, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM15 = CatalogInstance::getCatalog()->getROSAM("Q2_l_returnflag");
+	Operator* lp_ROS15 = new IntDataSource(lp_AM15, false, true);
+	((DataSource*) lp_ROS15)->setPositionFilter(lp_ROS3, 5);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM15 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_returnflag", "Q2_l_returnflag");
+	Operator* lp_WOS15 = new IntDataSource(lp_WOSAM15, true, false);
+	((DataSource*) lp_WOS15)->setPositionFilter(lp_WOS3, 5);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge15 = new Union(lp_ROS15, lp_WOS15, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM17 = CatalogInstance::getCatalog()->getROSAM("Q2_l_shipdate");
+	Operator* lp_ROS17 = new RLEDataSource(lp_AM17, true);
+	((DataSource*) lp_ROS17)->setPositionFilter(lp_ROS3, 6);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM17 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_shipdate", "Q2_l_shipdate");
+	Operator* lp_WOS17 = new IntDataSource(lp_WOSAM17, true, false);
+	((DataSource*) lp_WOS17)->setPositionFilter(lp_WOS3, 6);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge17 = new Union(lp_ROS17, lp_WOS17, 1); 
+
+//ROS OPERATORS:
+//PROJECT:
+//SELECT:
+	// This should probably be taking the projection, but I don't
+	//seem to need it now that column names are unique
+	ROSAM* lp_AM19 = CatalogInstance::getCatalog()->getROSAM("Q2_l_suppkey");
+	Operator* lp_ROS19 = new IntDataSource(lp_AM19, false, true);
+	((DataSource*) lp_ROS19)->setPositionFilter(lp_ROS3, 7);
+
+//WOS OPERATORS:
+//PROJECT:
+//SELECT:
+	// in ideal world, the first paramter would be projection name.
+	// for now catalog will recognize the column name instead.
+	WOSAM* lp_WOSAM19 = CatalogInstance::getCatalog()->getWOSAM("Q2_l_suppkey", "Q2_l_suppkey");
+	Operator* lp_WOS19 = new IntDataSource(lp_WOSAM19, true, false);
+	((DataSource*) lp_WOS19)->setPositionFilter(lp_WOS3, 7);
+
+//MERGE ROS AND WOS:
+//UNION:
+	Operator* lp_Merge19 = new Union(lp_ROS19, lp_WOS19, 1); 
+
+//OUPUT THE RESULTS:
+	Operator* srcs[8] = {lp_Merge5, lp_Merge7, lp_Merge9, lp_Merge11, lp_Merge13, lp_Merge15, lp_Merge17, lp_Merge19};
+	int numColumns[8] = {1, 1, 1, 1, 1, 1, 1, 1};
+	BlockPrinter* bPrint = new BlockPrinter(srcs, numColumns, 8, "QueryX.out");
+	bPrint->printColumns();

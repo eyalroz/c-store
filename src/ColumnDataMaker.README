@@ -1,0 +1,20 @@
+*******************
+* ColumnDataMaker *
+*******************
+A tool to generate c-store column data (in Berkeley DB formet). Currently it support integer column;
+can be RLE-compressed or uncompressed. Example configuration files:
+
+RLE: ColumnDataMaker_RLE.config
+Uncompressed: ColumnDataMaker_INT.config
+
+Use above config files templates to create your own.
+
+Compile:
+
+	make -f ColumnDataMaker.makefile
+
+Run:
+	./ColumnDataMaker my_config_file
+
+
+

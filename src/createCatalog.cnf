@@ -1,0 +1,65 @@
+#-----------------------------------------------------------------------------
+# creating system catalog from input text files
+#
+# CatalogTest	3	3	y.txt	z.txt
+#               ^       ^       ^       ^
+#               |       |       |       column 
+#               |       |   projection
+#               |       | 
+#               |   test case #3
+#               | 
+#           3 arguments
+#                        
+#(note: tab delimited between arguments)
+#
+# usage: only change the 4th and 5th argument if needed.
+#        replace them with text files conform
+#        with the record layouts described below.
+# 
+# Projection file layout: (field 3-4 currently are not used)
+# (note: use '#' as the delimieter between fields)
+#
+#    field#    meaning           data type   comment
+#    ======    ================  ==========  ==========                       
+#       1      Projection Name   text                                                 
+#       2      Projection ID     decimal                                             
+#       3      Table ID          decimal                                              
+#       4      Primary Column ID decimal                                             
+#
+#    example: define Q1_projection is the 5th projection. 
+#
+#    Q1_projection#5#0#0
+#
+# Column file layout: (field 3-4 currently are not used)
+# (note: use '#' as the delimieter between fields)
+#
+#    field#    meaning           data type   comment 
+#    ======    ================  ==========  ==========                       
+#       1      Column Name       text                                                  
+#       2      Column ID         decimal                                              
+#       3      Projection ID     decimal                                             
+#       4      Data Type         decimal     1=integer
+#                                            2=float
+#                                            3=string
+#       5      Compression Type  decimal     1=type 1
+#                                            2=type 1A                                  
+#                                            3=type 2                                  
+#                                            4=type 3                                  
+#                                            5=type 3A                                  
+#                                            6=type 4                                  
+#       6      Storage Key Flag  decimal     1=true  0=false                                    
+#
+#    example: define 8 columns for Q1_projection
+#
+#    Q1_l_shipdate#1#5#1#1#1
+#    Q1_l_suppkey#2#5#1#6#1
+#    Q1_l_orderkey#3#5#1#6#0
+#    Q1_l_partkey#4#5#1#6#0
+#    Q1_l_linenumber#5#5#1#6#0
+#    Q1_l_quantity#6#5#1#6#0
+#    Q1_l_extendedprice#7#5#1#6#0
+#    Q1_l_returnflag#8#5#3#6#0
+#
+#-----------------------------------------------------------------------------
+CatalogTest	3	3	CstoreSysTblProjection.txt	CstoreSysTblColumn.txt
+#

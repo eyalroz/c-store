@@ -1,0 +1,152 @@
+This guide will help you get things running.
+
+We've been developing and running our system on Fedora Core 2 and 3 platforms.
+We had also done some experiments on a machine with Debian "Crush" release. 
+Assuming the right libraries are available, CStore should run on other
+platforms.
+
+You will need 20GB free disk space to be able to run all of the instuctions in this document.
+
+To get things running, you need to have 2 things installed:
+
+- BerkeleyDB 4.2 (we don't have a configure script for this release, so to 
+get things running, if you don't install BerkeleyDB to 
+/usr/local/BerkeleyDB.4.2 then you need to change the SLEEPYCAT_DIRECTORY 
+variable in Build/makefile.init )
+
+- LZO version 1 (http://www.oberhumer.com/opensource/lzo/) - this is an 
+external compression algorithm that our system has the option to use. (Note the current version is version 2, but you can download old versions once you click on the download link).
+
+One you've installed these 2 things, to make cstore, all you need to do is:
+
+	1. cd to cstore/Build directory and edit makefile.init; change the variables in the top of the file to reflect the locations of BerkeleyDB 4.2 and LZO.
+
+	2. go to the cstore/src directory
+
+Now, you need to get the data files:
+
+	2. "make data"
+		-please wait patiently, you are unzipping a lot of data, this 
+		will take a while. See below for a description of the data 
+		files. You must have about 10GB free hard disk space. (you will
+		need a total of 20GB after running this and step 4).
+
+Next compile the binary:
+
+	3. "make"
+		-this will take a while, there are quite a few files that need 
+		to be compiled
+		-at the end (the linking stage) you might get the errors:
+		*************************************************
+		Operators/BlockWithPosToMinicolConverter.o:: No such file or directory
+		UnitTests/DeltaPosExtractLoadAndAccess.o:: No such file or directory
+		compressionexps/DictShortCutDataRunner.o:: No such file or directory
+		compressionexps/JoinExpDictCPUDataRunner.o:: No such file or directory
+		compressionexps/JoinExpType2DataRunner.o:: No such file or directory
+		OptPlan/Opt_SnowflakeInterestingOrders.o:: No such file or directory
+		compressionexps/SelExpDictCPUDataRunner.o:: No such file or directory
+		compressionexps/SelExpType2DataRunner.o:: No such file or directory
+		Wrappers/Decoder/ShortCutDictDelayedDecoder.o:: No such file or directory
+		Operators/Type2BlockToMinicolConverter.o:: No such file or directory
+		UnitTests/Type2ExtractLoadAndAccess.o:: No such file or directory
+		Operators/ValBlockToPosBlockConverter.o:: No such file or directory
+		********************************************
+		Don't worry about these errors. The executable was still made (the next time you make, you won't see these errors).
+
+Next populate some BDB tables to query against (from the data files copied
+over during step 2 above) - you only have to do this once (but it will take
+about 20 minutes). You might get errors like "cp: cannot stat `Data/D6.data.wos.storage_key': No such file or directory" don't worry about it.
+
+        4. ./cstoreqptest 0 createData.cnf global.cnf
+
+Run the system: (you should be able to enter SQL and get an answer in 
+QueryX.out) 
+
+	5. "./cstoreqptest" (some SQL queries you can try to run are
+	located in the queries file)
+
+Other things that are useful to know:
+
+You might want to run C-Store on your own data (rather than the TPC-H data we supply). For this release, as long as your data is integer data, the following is the best way to do this:
+1) Create a space delimited file with each column in the file representing a column in your table or "C-Store projection". For example, in the cstore/data directory, there exists the data file lshipdate.sorted.tiny with the following contents:
+8036 221
+8036 1693
+8036 3697
+8037 5862
+8037 6428
+8037 6982
+8038 7486
+8038 9194
+8038 10372
+8038 11056
+
+This is a two column projection; the first column is an integer representation of lineitem.shipdate, the second column is lineitem.suppkey. You may have up to 256 columns in your projection (this is an arbitrary number - if you want more simply change the code in cstore/src/UnitTests/ProjMaker.cpp).
+
+2) Run the C-Store Projection/Column-Maker. From the cstore/src directory, run:
+./cstoreqptest 0 projectionMaker.cnf global.cnf <data-file>
+
+e.g. for the above example, you'd run 
+./cstoreqptest 0 projectionMaker.cnf global.cnf ../data/lshipdate.sorted.tiny
+
+follow the command line instructions from there. As soon as you are finished with this process, the projection will be queryable in C-Store.
+
+Note: for non-integer data, you will still have to create/query these columns by hand. This is an artifact of the query executer being able to handle generic type data but our not updating the plan generator to handle generic type data at the time of the release. The next release will have this fixed.
+
+DIRECTORY STRUCTURE:
+
+cstore/doc: contains documentation for this project
+cstore/data: contains all data files (that were received when you did make data)
+cstore/Build: contains all build related files for project. Contains makefile.init which contains some of the important makefile flags used when compiling cstore
+cstore/RuntimeData: all BerkeleyDB data files will be put in this directory
+cstore/src: root code source code directory. Also contains test.cnf and global.cnf which are described below.
+cstore/src/UnitTests: contains the unit tests that can be run via test.cnf
+cstore/src/AM: contains interface classes of cstore with BerkeleyDB, currently also contains the catalog code
+cstore/src/parser: contains code for the SQL parser
+cstore/src/plan: contains code for the cstore plan generator
+cstore/src/TM: contains code for the tuple mover
+cstore/src/Util: contains some useful files for the project (e.g. an output logger, a stopwatch, and a HashMap)
+cstore/src/Operators: contains all operator code for cstore
+cstore/src/Writers: contains all Block Writers for each compression type
+cstore/src/Wrappers: contains datasources, blocks, encoders, and decoders for each compression type
+cstore/src/common: contains some source code used by all parts of C-Store
+cstore/src/compressionexps: Contains the source code used to run experiments for the C-Store compression paper (SIGMOD 2006)
+cstore/src/materialexps: Contains the source code used to run experiments for the C-Store materialization paper (ICDE 2007)
+cstore/src/sparseexps: Contains the source code used to run experiments for ongoing sparse data research
+cstore/src/ccode: contains the query plans in C that are used in the regression tests and the correct query answers (run ./RegressionTestRos.sh in cstore/src)
+cstore/src/ccoderoswos: contains the query plans in C that are used in the regression tests that test BOTH ROS and WOS and the correct query answers (run ./RegressionTest.sh in cstore/src)
+
+RUNNING UNIT TESTS:
+The default unit test to run is Plans, which isn't really a test at all. This
+is the system interface, where you can type in SQL queries and get the results
+printed to QueryX.out.
+
+If you want to run other tests (like pre-generated query plans 1-7 described
+in the cstore paper at VLDB), edit the test.cnf file and uncomment the unit
+test you wish to run. global.cnf is another useful file, it contains some
+global variables which are used in the system. In this release, it's probably
+not worth the ordinary user changing anything in global.cnf.
+
+DATA FILES:
+When you run make data you get a bunch of TPC-H scale 10 data. Below is the schema of this data. Columns after the '|' indicate the sort order.
+
+D6.data.ros/wos:
+(l_shipdate, l_suppkey, l_orderkey, l_partkey, l_linenumber, l_quantity,
+l_extendedprice, l_returnflag | l_shipdate, l_suppkey)
+
+D7.data.ros/wos:
+(o_orderdate, l_suppkey, l_shipdate | o_orderdate, l_suppkey)
+
+D8.data.ros/wos
+(o_orderdate, o_custkey, o_orderkey | o_orderdate)
+
+D9.data.wos/ros:
+(l_returnflag, l_extendedprice, c_nationkey | l_returnflag)
+
+D10.data.wos/ros:
+(c_custkey, c_nationkey | c_custkey)
+
+When you run ./cstoreqptest 0 createData.cnf global.cnf you create a whole bunch of BDB files for the ROS data. Q1_projection - Q3 projection are all the same as D6. Q4_projection - Q6_projection are all the same as D7. Q7_projection is the same as D9.
+
+
+For more information, please email cstore-dev@nms.lcs.mit.edu
+

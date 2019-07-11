@@ -1,0 +1,267 @@
+
+#Welcome to config file for unit tests
+#The file works by placing the name of each unit test on each line 
+#followed by its arguements
+# PLEASE NOTE : TAB is the separator
+#First token is test suite name
+#Second token is the number of args for that test suite
+#Remaining tokens are the arguments
+
+#*************************
+#  Mini data generation
+#**************************
+#PlanData	0
+
+#*************************
+#  Opt_Plan Test
+#*************************
+#OptPlanTest	0
+#OptTest	0
+#OptTestOneChoice	0
+
+#*************************
+#  Plan Test
+#**************************
+Plans	0
+#PlanInC	0
+#QueryAny	0
+#ProjMaker	1	$1
+
+#***************************
+#BAnd/BOr/Not Operator tests
+#***************************
+#BAndOpTest	0
+#BAndQueryTest	0
+#BOrOpTest	0
+#BNotOpTest	0
+#BNotQueryTest	0
+
+#***************************
+#Insert/Delete Tests
+#***************************
+#DeleteOpTest	0
+
+
+#*************************
+#BDB and Data Access Tests
+#**************************
+#BDBReadWrite	0
+
+#********************
+#Copy Operator tests
+#********************
+#BCopyOpTest	0
+
+#*************
+#Type2 Tests
+#*************
+#DeltaPosWriterTest	0
+#Type2WriterTest	0
+#Type2ExtractLoadAndAccess	0
+
+#*************
+#Dict Tests
+#*************
+#DictExtractLoad	0
+
+#*************
+#Int Tests
+#*************
+#IntEncodeDecodeTest	0
+#IntReaderWriterTest	0
+#IntExtractAndLoad	0
+
+
+#*************
+#LZ Tests
+#*************
+#LZED	0
+#LZvsINT	0
+#LZEncodeDecode	0
+
+
+#*************
+#NS Tests
+#*************
+#NSEncodeDecode	0
+
+#*************
+#RLE Tests
+#*************
+#RLEBlockTest	0
+#RLEEncodeDecode	0
+#RLEExtractLoadAndAccess	0
+#RLEWriterTest	0
+
+
+#********************
+#PosBlock tests
+#********************
+#PosBlockTest	0
+
+#********************
+#Utility class tests
+#********************
+#HashMapTest	0
+#SpillMapTest	0
+
+#********************
+#Query tests
+#********************
+
+#Query1	0
+#Query2	0
+#Query3	0
+#Query4	0
+#Query5	0
+#Query6	0
+#Query7	0
+
+
+#Query1U	0
+#Query2U	0
+#Query3U	0
+#Query4U	0
+#Query5U	0
+#Query6U	0
+#Query7U	0
+
+#Query100	0
+#QueryAny	0
+
+#*********************
+#Experiments
+#*********************
+#IntDataMaker	1	$1
+#IntDataRunner	2	$1	$2
+#NSDataMaker	1	$1
+#NSDataRunner	2	$1	$2
+#DictDataMaker	2	$1	$2
+#DictDataRunner	2	$1	$2
+#DictCPUDataMaker	2	$1	$2
+#DictCPUDataRunner	2	$1	$2
+#RLEDataMaker	1	$1
+#RLEDataRunner	2	$1	$2
+#LZDataMaker	2	$1
+#LZDataRunner	2	$1	$2
+#Type2DataMaker	1	$1
+#Type2DataRunner	2	$1	$2
+#DictShortCutDataRunner	2	$1	$2
+
+#Int2DataMaker	1	$1
+#Int2DataRunner	2	$1	$2
+#NS2DataMaker	1	$1
+#NS2DataRunner	2	$1	$2
+#Dict2DataMaker	2	$1	$2
+#Dict2DataRunner	2	$1	$2
+#DictCPU2DataMaker	2	$1	$2
+#DictCPU2DataRunner	2	$1	$2
+#RLE2DataMaker	1	$1
+#RLE2DataRunner	2	$1	$2
+#LZ2DataMaker	2	$1
+#LZ2DataRunner	2	$1	$2
+
+#JoinExpDataMaker	2	$1	$2
+#JoinExpDataRunner	2	$1	$2
+#JoinExpRLEDataRunner	2	$1	$2
+#JoinExpDictCPUDataRunner	2	$1	$2
+#JoinExpType2DataRunner	2	$1	$2
+#SelExpDataMaker	2	$1	$2
+#SelExpDataRunner	2	$1	$2
+#SelExpRLEDataRunner	2	$1	$2
+#SelExpType2DataRunner	2	$1	$2
+#SelExpDictCPUDataRunner	2	$1	$2
+
+#BAndRLERLE	0
+#MinicolConcatTest	0
+#PosAndEM	6	9655	7	INT	0	0	1
+#JoinEM	2	1	1000000
+#LMDataMaker	1	$1
+#T2Test	2	$1	$2
+
+#SelExpDM	1	$1
+#SelExpDR	2	$1	$2
+#StrSelExpDM	1	$1
+#StrSelExpDR	2	$1	$2
+
+#********************
+#Operator tests
+#********************
+#MergeTest	0C
+#JoinTest	0
+
+#********************
+#Profiler tests
+#********************
+#BitProfileTest	0
+#BDBPerformanceProfile	0
+
+#********************
+#Tuple Mover Tests 
+#first argument is the the plan data file name for the test
+#There will be three associated data files with suffix: .ros .wos .mo
+#.ros is the flat data set in tab delimited format for creating ROS for a projection
+#.wos is ...... for creating WOS for a projection
+#.mo  is the flat data set that reflects correct merge-out result.
+#
+#the second argument tell number of columns to be used for merge-out test.
+#the third is lastSortKey index (0-based)
+#the fourth flag tells whether you want to validate your result against the
+#    the bdb tables generated from .mo directly
+#the last flag tells whether the bdb tables exist, if not exist the tuple mover
+#    merger will create bdb tables based on .ros and .wos.  
+#
+#********************
+#TmMergerTest	5	../../data/TMData/proj1	2	0	1	0
+#TmMergerTest	5	../../data/TMData/proj2	2	0	1	0
+#TmMergerTest	5	../../data/TMData/proj3	2	0	1	0
+
+#Following tests are besed on our current scale10 data
+ 
+#SM_D6 is extracted from D6 data with 100000 rows for .ros
+#the actual mergeout time should be around 770 ms
+#TmMergerTest	5	../../data/TMData/SM_D6	6	1	1	0
+
+
+
+############TmMergerTest support another set of argument using CatalogInstance
+#there is only one argument which is the projection name
+#following unit test takes only one string argument as projection name
+
+#!!!This test is valid only after PlanDataFullScale has been executed.
+#TmMergerTest	1	D6.data
+
+
+
+#********************
+# WOS/Catalog tests
+#********************
+#
+# This is a catalog demo
+#CatalogTest	0
+#
+# This generates full scale data
+#PlanDataFullScale	0
+# This generates full scale data for unit test queries
+#GenerateBDBQueryData	0
+#
+#DummyTest	0
+
+
+#Known NOT WORKING Unit tests (antiquated and not used any more)
+#Query1WSRS	0
+#Query2WSRS	0
+#Query3WSRS	0
+#RLEEncodeDecodeII	0
+#BitReaderWriter	0
+#QueryDNA	0
+# This is a WOSTest demo for Operators team.
+#WOSTest	0
+# This is a WOSTest demo for the Merge-out team.
+#WOSTest2	0
+# DeleteVector Test
+#DVTest		0
+#QueryTest	0
+#InsertOpTest	0
+#SelectDV	0
+#DeltaPosExtractLoadAndAccess	0

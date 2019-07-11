@@ -1,0 +1,78 @@
+Query1:
+SELECT Q1_l_shipdate, COUNT (*)
+FROM Q1_projection
+WHERE Q1_l_shipdate > 9000
+GROUP BY Q1_l_shipdate;
+
+Query2:
+SELECT Q2_l_suppkey, COUNT (*)
+FROM Q2_projection
+WHERE Q2_l_shipdate = 9000
+GROUP BY Q2_l_suppkey;
+
+Query3:
+SELECT Q3_l_suppkey, COUNT (*)
+FROM Q3_projection
+WHERE Q3_l_shipdate > 9000
+GROUP BY Q3_l_suppkey;
+
+Query4:
+SELECT Q4_o_orderdate, MAX (Q4_l_shipdate)
+FROM Q4_projection
+WHERE Q4_o_orderdate > 9000
+GROUP BY Q4_o_orderdate;
+
+Query5:
+SELECT Q5_l_suppkey, MAX (Q5_l_shipdate)
+FROM Q5_projection
+WHERE Q5_o_orderdate = 9000
+GROUP BY Q5_l_suppkey;
+
+Query6:
+SELECT Q6_l_suppkey, MAX (Q6_l_shipdate)
+FROM Q6_projection
+WHERE Q6_o_orderdate > 9000
+GROUP BY Q6_l_suppkey;
+
+Query7:
+SELECT Q7_c_nationkey, SUM(Q7_l_extendedprice)
+FROM Q7_projection
+WHERE Q7_l_returnflag = 82
+GROUP BY Q7_c_nationkey;
+
+Query 8:
+SELECT D8_orderdate,  D10_nationkey
+FROM D8_projection, D10_projection
+WHERE D8_custkey = D10_custkey AND D10_custkey = 580241;
+
+Query 9:
+SELECT * FROM D10_projection WHERE D10_custkey = 2;
+
+Query 10:
+SELECT * FROM Q2_projection WHERE Q2_l_suppkey = 42;
+
+Query 11:
+SELECT COUNT (*)
+FROM Q1_projection;
+
+Query 12:
+SELECT * FROM D10_projection WHERE D10_custkey < 10;
+
+Query 13:
+SELECT * FROM D10_projection WHERE D10_custkey < 10 AND D10_nationkey = 4;
+
+Query 14:
+SELECT * FROM D10_projection WHERE D10_custkey < 10 OR D10_nationkey = 4;
+
+Query 15 (run each line in succession:
+SELECT * FROM D10_projection WHERE D10_custkey < 10;
+INSERT INTO D10_projection VALUES(4,2);
+SELECT * FROM D10_projection WHERE D10_custkey < 10;
+
+Query 16:
+SELECT Q1_l_suppkey FROM Q1_projection WHERE  Q1_l_suppkey = 20000;
+
+Query 17:
+SELECT Q1_l_shipdate FROM Q1_projection
+WHERE  Q1_l_shipdate > 9000 AND Q1_l_shipdate < 9005;
+

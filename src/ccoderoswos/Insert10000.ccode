@@ -1,0 +1,27 @@
+//INSERT:
+	// The following 2 lines of code will be replaced by
+	// WOSManager* lpWOSManager = CatalogInstance::getCatalog()->getWOSManager(m_lpProjection->toString());
+	string sColumnAny = CatalogInstance::getCatalog()->getPrimaryColumnName("Q4_projection");
+	WOSManager* lpWOSManager = CatalogInstance::getCatalog()->getWOSManager(sColumnAny);
+	StopWatch insertTimer;
+	insertTimer.start();
+	InsertOperator* lpInsertOp = NULL;
+	int iStorageKey = 0;
+	int iColIndex = 0;
+	int c1Value = 100000;
+	int c2Value = 200000;
+	int c3Value = 300000;
+	for (int i=0; i < 10000; ++i)
+	{
+		lpInsertOp = new InsertOperator(lpWOSManager);
+		iStorageKey = lpInsertOp->initTuple();
+		iColIndex = CatalogInstance::getCatalog()->getColumnIndex("Q4_projection", "Q4_l_shipdate");
+		lpInsertOp->populateField(iColIndex, iStorageKey, c1Value++);
+		iColIndex = CatalogInstance::getCatalog()->getColumnIndex("Q4_projection", "Q4_l_suppkey");
+		lpInsertOp->populateField(iColIndex, iStorageKey, c2Value++);
+		iColIndex = CatalogInstance::getCatalog()->getColumnIndex("Q4_projection", "Q4_o_orderdate");
+		lpInsertOp->populateField(iColIndex, iStorageKey, c3Value++);
+		lpInsertOp->appendTuple(iStorageKey);
+		delete lpInsertOp;
+	}
+	cout << "Insert 10,000 rows took: " << insertTimer.stop() << endl;

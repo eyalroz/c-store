@@ -1,0 +1,119 @@
+This is a script that would run given (correctly formatted) queries on Oracle database (10.0.0)
+Author: Tien Hoang - hoangt@cs.brandeis.edu
+
+
+------------------
+0. Files included:
+------------------
+The necessary files are:
+- pro.mk		Configuration file (DO NOT MODIFY)
+- env_precomp.mk	Environment configuration file (DO NOT MODIFY)
+- input			Input file to the script
+- OracleScript.pc	Source file
+With the above files, you would be able to create the executable script. For more information, see section 2 on how to compile. Otherwise, go to section 1 for more information on how to use the already-created exectable scripts.
+NOTE: There have to be files that contains queries in order for the script to work as well.
+
+
+--------------
+1. How to run:
+--------------
+Two executable files are already created and ready for running:
+	- DMV-OracleScript
+	- TPCH-OracleScript
+
+Since the queries were running on two different database schemas (DMV: dmv10/dmv10 and TPC-H: scale10/scale10), the two executable scripts were created for your convenience and all you need to do is:
+	./<script name> <input file name>
+For example:
+	./DMV-OracleScript input
+where input is the input file which is pretty straightfoward.
+
+The input file includes a number of things:
+	- The number of query files
+	- The name for the output of the summary file (that contains all the query files and their estimated planning time in sorted order)
+	- All the query files
+
+
+------------------
+2. How to compile:
+------------------
+
+# NGA
+	$ORACLE_HOME and $LD_LIBRARY_PATH must be set
+	example@129: file .bach_profile
+		# .bash_profile
+
+		# Get the aliases and functions
+		if [ -f ~/.bashrc ]; then
+		        . ~/.bashrc
+		fi
+
+		# User specific environment and startup programs
+		ORACLE_HOME=/app/oracle/oracle/product/10.2.0/db_1
+		LD_LIBRARY_PATH=/app/oracle/oracle/product/10.2.0/db_1/lib
+		ORACLE_SID=orcl
+
+
+		PATH=$HOME/bin:$PATH:$ORACLE_HOME/bin:/sbin
+		umask 022
+
+		export ORACLE_HOME
+		export LD_LIBRARY_PATH
+		export ORACLE_SID
+		export PATH
+		unset USERNAME
+		
+
+
+
+	. Copy OracleScript.pc to OracleScriptDs2.pc or  OracleScriptDs20.pc or OracleScriptTpch10.pc
+		cp OracleScript.pc OracleScriptDs2.pc
+	. Open  OracleScriptDs2.pc
+	. Search "strcpy((char*) userid.arr"
+	. Replace the curent username ("dmv10") with "ds2" or ...
+	. Search "strcpy((char*) password.arr"
+	. Replace  the curent password ("dmv10") with "scale2" or ...
+	. (b) should be
+		make -f pro.mk OBJS=OracleScriptDs2.o EXE=OracleScriptDs2 cppbuild 
+		OR
+		make -f pro.mk OBJS=OracleScriptDs20.o EXE=OracleScriptDs20 cppbuild 
+		OR
+		make -f pro.mk OBJS=OracleScriptTpch10.o EXE=OracleScriptTpch10 cppbuild
+		
+	. Do (c)
+	. (d) on oracle@129.64.46.70 should be:
+	g++ -o OracleScriptDs2 OracleScriptDs2.c -L/app/oracle/oracle/product/10.2.0/db_3/lib -lclntsh `cat /app/oracle/oracle/product/10.2.0/db_3/lib/ldflags`   `cat /app/oracle/oracle/product/10.2.0/db_3/lib/sysliblist` -ldl -lm
+	OR
+	g++ -o OracleScriptDs20 OracleScriptDs20.c -L/app/oracle/oracle/product/10.2.0/db_3/lib -lclntsh `cat /app/oracle/oracle/product/10.2.0/db_3/lib/ldflags`   `cat /app/oracle/oracle/product/10.2.0/db_3/lib/sysliblist` -ldl -lm
+	OR
+	g++ -o OracleScriptTpch10 OracleScriptTpch10.c -L/app/oracle/oracle/product/10.2.0/db_3/lib -lclntsh `cat /app/oracle/oracle/product/10.2.0/db_3/lib/ldflags`   `cat /app/oracle/oracle/product/10.2.0/db_3/lib/sysliblist` -ldl -lm
+
+	// oracle@93
+g++ -o OracleScriptTpch100 OracleScriptTpch100.c -L/app/oracle/oracle/product/10.2.0/db_1/lib -lclntsh `cat /app/oracle/oracle/product/10.2.0/db_1/lib/ldflags`   `cat /app/oracle/oracle/product/10.2.0/db_1/lib/sysliblist` -ldl -lm
+
+# NGA END
+
+
+
+
+If there is any case that you might need to modify the code in OracleScript.pc and would like to recompile the script. Here is what you need to do:
+
+a - Modify the code whichever way you like
+b - Run command:	make -f pro.mk OBJS=OracleScript.o EXE=OracleScript cppbuild
+	Though this step will give you some error, ignore them. Go to the next step.
+c - Open OracleScript.c, search for the last 'break' and replace it with 'return'.
+d - Run command:
+	g++ -o OracleScript OracleScript.c -L/opt/oracle/product/10.1.0/db_1/lib/ -lclntsh `cat /opt/oracle/product/10.1.0/db_1/lib/ldflags`   `cat /opt/oracle/product/10.1.0/db_1/lib/sysliblist` -ldl -lm
+
+	This would create an executable file named OracleScript. If you would like to change the name of the executale file, you can certainly do so given the command above.
+
+NOTE: This procedure on how to compile might be somewhat absurb, but there were problems with Pro*C/C++ that this was the only way around that I could figure out. If you'd like to have more information on why or suggestion for a better way, please let me know!
+
+-----------------
+3. Miscellaneous:
+-----------------
+There are a few problems with this script or Pro*C/C++ in general:
+
+1. One of them is that it's unable to create/open more than one new file once you are connected to the database. Thus, for each query file, it is run by connecting to the database, run the queries in the query file, do whatever you want (create new files, get running time), then disconnect from the database. And you have to do this for each of the query file. I couldn't figure out why.
+Thus, calculating the CPU time of the script is somewhat tricky. This is not yet done at the moment.
+
+2. This script and its configuration files are very platform-depedent. I had a tough time figuring out how to compile and run the code. If what is said above is not working for you, try to look it up... and of course, you are always welcome to email me :) Have fun!

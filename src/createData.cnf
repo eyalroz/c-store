@@ -1,0 +1,197 @@
+
+#Welcome to config file for unit tests
+#The file works by placing the name of each unit test on each line 
+#followed by its arguements
+# PLEASE NOTE : TAB is the separator
+#First token is test suite name
+#Second token is the number of args for that test suite
+#Remaining tokens are the arguments
+
+#*************************
+#  Mini data generation
+#**************************
+#PlanData	0
+
+#*************************
+#  Plan Test
+#**************************
+#QueryTest	0
+#Plans	0
+#PlanInC	0
+
+#***************************
+#BAnd/BOr/Not Operator tests
+#***************************
+#BAndOpTest	0
+#BAndQueryTest	0
+#BOrOpTest	0
+#BNotOpTest	0
+#BNotQueryTest	0
+
+#***************************
+#Insert/Delete Tests
+#***************************
+#InsertOpTest	0
+#DeleteOpTest	0
+
+
+#*************************
+#BDB and Data Access Tests
+#**************************
+#BDBReadWrite	0
+
+#********************
+#Copy Operator tests
+#********************
+#BCopyOpTest	0
+
+#*************
+#DeltaPos Tests
+#*************
+#DeltaPosExtractLoadAndAccess	0
+#DeltaPosWriterTest	0
+
+#*************
+#Dict Tests
+#*************
+#DictExtractLoad	0
+
+#*************
+#Int Tests
+#*************
+#IntEncodeDecodeTest	0
+#IntExtractAndLoad	0
+#IntReaderWriterTest	0
+
+
+#*************
+#LZ Tests
+#*************
+#LZED	0
+#LZEncodeDecode	0
+#LZEncodeDecode	0
+#LZvsINT	0
+
+
+#*************
+#NS Tests
+#*************
+#NSEncodeDecode	0
+
+#*************
+#RLE Tests
+#*************
+#RLEBlockTest	0
+#RLEEncodeDecode	0
+#RLEEncodeDecodeII	0
+#RLEExtractLoadAndAccess	0
+#RLEWriterTest	0
+
+
+#********************
+#PosBlock tests
+#********************
+#PosBlockTest	0
+
+#********************
+#Utility class tests
+#********************
+#SpillMapTest	0
+#BitReaderWriter	0
+#HashMapTest	0
+
+#********************
+#Query tests
+#********************
+
+#Query1	0
+#Query2	0
+#Query3	0
+#Query4	0
+#Query5	0
+#Query6	0
+#Query7	0
+
+
+#Query1U	0
+#Query2U	0
+#Query3U	0
+#Query4U	0
+#Query5U	0
+#Query6U	0
+#Query7U	0
+
+#Query100	0
+#QueryDNA	0
+
+#Query1WSRS	0
+#Query2WSRS	0
+#Query3WSRS	0
+#********************
+#Operator tests
+#********************
+#MergeTest	0
+
+#********************
+#Profiler tests
+#********************
+#BitProfileTest	0
+#BDBPerformanceProfile	0
+
+#********************
+#Tuple Mover Tests
+#first argument is the the plan data file name for the test
+#There will be three associated data files with suffix: .ros .wos .mo
+#.ros is the flat data set in tab delimited format for creating ROS for a projection
+#.wos is ...... for creating WOS for a projection
+#.mo  is the flat data set that reflects correct merge-out result.
+#
+#the second argument tell number of columns to be used for merge-out test.
+#the third is lastSortKey index (0-based)
+#the fourth flag tells whether you want to validate your result against the
+#    the bdb tables generated from .mo directly
+#the last flag tells whether the bdb tables exist, if not exist the tuple mover
+#    merger will create bdb tables based on .ros and .wos.  
+#
+#********************
+#TmMergerTest	5	../../data/TMData/proj1	2	0	1	0
+#TmMergerTest	5	../../data/TMData/proj2	2	0	1	0
+#TmMergerTest	5	../../data/TMData/proj3	2	0	1	0
+
+#Following tests are besed on our current scale10 data
+ 
+#SM_D6 is extracted from D6 data with 100000 rows for .ros
+#the actual mergeout time should be around 770 ms
+#TmMergerTest	5	../../data/TMData/SM_D6	6	1	1	0
+
+#MM_D6 is extracted from D6 data with 1000000 rows for .ros
+#the actual mergeout time should be around 6000 ms 
+#TmMergerTest	5	../../data/TMData/MM_D6	6	1	1	0
+
+#full scale test on D8(same as D3)
+#with validation flag on, it might take 10 minutes for this whole test
+#the actual mergeout time should be around 31060 ms
+#TmMergerTest	5	../../data/TMData/D8.data	3	0	1	0
+
+
+
+
+#********************
+# WOS/Catalog tests
+#********************
+# This is a WOSTest demo for Operators team.
+#WOSTest	0
+#
+# This is a WOSTest demo for the Merge-out team.
+#WOSTest2	0
+#
+# This is a catalog demo
+#CatalogTest	0
+#
+# This generates full scale data
+PlanDataFullScale	0
+# This generates full scale data for unit test queries
+GenerateBDBQueryData	0
+#
+# DeleteVector Test
+#DVTest		0

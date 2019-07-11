@@ -1,0 +1,18 @@
+# Build etags
+
+# A file containing all source file paths, followed by all header file paths
+# This file does not recompile, which is useful if the build is broken
+BSSRCS = ./BSsrcs
+SCLC = ./sclc
+
+SRCS:	BSsrcs
+	@echo 'BSscrs <all .d files> >SRCS'
+	${BSSRCS} $(DEPS) >SRCS
+
+# emacs-style TAGS file
+TAGS:	SRCS
+	etags -l c++ - <SRCS
+
+# lines of code report file
+LOC:	SRCS
+	${SCLC} -filelist SRCS >LOC

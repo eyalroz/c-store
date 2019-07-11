@@ -1,0 +1,3 @@
+cd ../data
+./flushCache
+cd -
