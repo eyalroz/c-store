@@ -35,9 +35,9 @@ class Exception{
 public:
 
 	Exception();
-	Exception(char *msg_);
+	Exception(const char *msg_);
 	virtual ~Exception();
-	char* msg;
+	const char* msg;
 };
 
 #endif // EXCEPTION_H

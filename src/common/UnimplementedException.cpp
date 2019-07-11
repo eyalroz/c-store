@@ -33,7 +33,7 @@
 UnimplementedException::UnimplementedException() : Exception()
 {}
 
-UnimplementedException::UnimplementedException(char* msg_) : Exception(msg_)
+UnimplementedException::UnimplementedException(const char* msg_) : Exception(msg_)
 {}
 
 UnimplementedException::~UnimplementedException()

@@ -34,7 +34,7 @@ AccessException::AccessException() : Exception()
 {
 }
 
-AccessException::AccessException(char* msg_) : Exception(msg_)
+AccessException::AccessException(const char* msg_) : Exception(msg_)
 {
 }
 AccessException::~AccessException()
