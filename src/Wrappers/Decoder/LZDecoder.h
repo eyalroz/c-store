@@ -35,8 +35,8 @@
 #define _LZDECODER_H_
 
 #include "IntDecoder.h"
-#include <lzo1x.h>
-//#include <lzoutil.h>
+#include <lzo/lzo1x.h>
+//#include <lzo/lzoutil.h>
 
 class LZDecoder : public IntDecoder
 {
