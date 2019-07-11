@@ -1,7 +1,7 @@
 /* Compile me with -O0 or else you'll get none. */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #define CACHE_FLUSH_BUFFER_SIZE  16*1024*1024
 
 void do_flush(void);

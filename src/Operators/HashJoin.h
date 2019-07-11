@@ -43,7 +43,7 @@
 #include "../Wrappers/SMultiBlock.h"
 #include "../Wrappers/MultiBlock.h"
 #include "../Util/HashMap.h"
-#include <math.h>
+#include <cmath>
 #include <hash_map.h>
 
 class PBObject {

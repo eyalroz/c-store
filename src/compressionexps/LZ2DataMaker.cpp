@@ -31,7 +31,7 @@
  /**
  */
 #include "LZ2DataMaker.h"
-#include <fstream.h>
+#include <fstream>
 
 LZ2DataMaker::LZ2DataMaker() {
 }

@@ -36,7 +36,7 @@
 
 #include "BlockPosNonContig.h"
 #include "PosBlock.h"
-#include <iostream.h>
+#include <iostream>
 
 class BlockWithPos : public BlockPosNonContig
 {

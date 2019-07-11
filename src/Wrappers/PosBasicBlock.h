@@ -33,7 +33,7 @@
 
 #include "../common/PosBlock.h"
 #include "BasicBlock.h"
-#include <iostream.h>
+#include <iostream>
 #include "../common/UnexpectedException.h"
 class PosBasicBlock : public PosBlock
 {

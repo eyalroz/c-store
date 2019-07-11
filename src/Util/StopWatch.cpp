@@ -33,8 +33,8 @@
 
 
 #include "StopWatch.h"
-#include <fstream.h>
-#include <iostream.h>
+#include <fstream>
+#include <iostream>
 
 StopWatch::StopWatch()
 {

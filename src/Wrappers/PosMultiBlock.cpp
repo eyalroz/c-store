@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "PosMultiBlock.h"
-#include <stdio.h>
+#include <cstdio>
 
 PosMultiBlock::PosMultiBlock(bool posSorted_)
 {

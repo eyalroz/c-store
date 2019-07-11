@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "PosRLEBlock.h"
-#include <stdio.h>
+#include <cstdio>
 
 // Position RLE Blocks
 

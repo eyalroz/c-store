@@ -37,7 +37,7 @@
 #include "Type2Block.h"
 #include "../common/PosBlock.h"
 #include "CodingException.h"
-#include <iostream.h>
+#include <iostream>
 
 class SparseBlock : public MultiBlock
 {

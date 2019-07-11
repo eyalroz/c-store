@@ -18,7 +18,7 @@
 #include "Opt_Table.h"
 #include "Opt_QueryGraph.h"
 #include "Opt_Comparison.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 class Opt_QueryGraph;
 

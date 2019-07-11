@@ -34,7 +34,8 @@
 #include "UnexpectedException.h"
 #include "UnimplementedException.h"
 #include "Constants.h"
-#include <string.h>
+#include <string>
+#include <cstring>
 #include <iostream>
 
 class ValPos{

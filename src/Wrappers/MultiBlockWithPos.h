@@ -36,7 +36,7 @@
 
 #include "MultiBlock.h"
 #include "CodingException.h"
-#include <iostream.h>
+#include <iostream>
 #include "../common/PosBlockArray.h"
 
 class MultiBlockWithPos : public MultiBlock

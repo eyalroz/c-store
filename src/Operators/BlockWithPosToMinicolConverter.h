@@ -6,7 +6,8 @@
 #include "../common/BlockWithPos.h"
 #include "../Wrappers/PosRLEBlock.h"
 #include "MinicolShimOperator.h"
-#include <string.h>
+#include <string>
+#include <cstring>
 
 class BlockWithPosToMinicolConverter : public MinicolShimOperator
 {

@@ -4,7 +4,7 @@
 #include "../common/PosBlock.h"
 #include "../common/UnexpectedException.h"
 #include "../common/UnimplementedException.h"
-#include <iostream.h>
+#include <iostream>
 
 class PosArrayBlock : public PosBlock
 {

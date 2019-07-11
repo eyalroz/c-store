@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "BCopyOperator.h"
-#include <stdio.h>
+#include <cstdio>
 
 BCopyOperator::BCopyOperator(Operator *inOp_, int inColIndex_, int numParents)  
   : m_input(inOp_), m_ColIndex(inColIndex_), numParents_(numParents) {

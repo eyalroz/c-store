@@ -33,7 +33,7 @@
 
 #include "PosBlock.h"
 #include "../Wrappers/CodingException.h"
-#include <iostream.h>
+#include <iostream>
 
 // Array of Position Blocks
 class PosBlockArray : public PosBlock

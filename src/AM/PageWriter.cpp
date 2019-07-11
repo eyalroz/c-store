@@ -33,7 +33,7 @@
 #include <sstream>
 #include <string>
 #include <map>
-#include <math.h>
+#include <cmath>
 
 #include <db_cxx.h>
 

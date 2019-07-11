@@ -36,7 +36,7 @@
 #define _STOPWATCH_H_
 
 #include <ctime>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <sys/param.h>
 #include <sys/times.h>

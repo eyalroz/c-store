@@ -1,5 +1,5 @@
 #include "PosArrayBlock.h"
-#include <iostream.h>
+#include <iostream>
 
 PosArrayBlock::PosArrayBlock(int capacity)
 {

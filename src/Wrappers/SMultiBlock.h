@@ -35,8 +35,9 @@
 #include "../common/SPair.h"
 #include "../common/Block.h"
 #include "../common/SBlock.h"
-#include <string.h>
-#include <iostream.h>
+#include <string>
+#include <cstring>
+#include <iostream>
 
 class SMultiBlock : public SBlock
 {

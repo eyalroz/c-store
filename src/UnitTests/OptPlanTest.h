@@ -8,8 +8,8 @@
 
 #include <iostream>
 #include <string>
-#include <assert.h>
-#include <time.h>
+#include <cassert>
+#include <ctime>
 
 #include "../common/Interfaces.h"
 #include "../AM/AM.h"

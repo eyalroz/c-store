@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "PosBasicBlock.h"
-#include <stdio.h>
+#include <cstdio>
 
 PosBasicBlock::PosBasicBlock(bool posSorted_)
 {

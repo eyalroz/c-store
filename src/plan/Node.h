@@ -41,7 +41,7 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
-#include <fstream.h>
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <string>

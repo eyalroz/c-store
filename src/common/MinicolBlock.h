@@ -5,7 +5,7 @@
 #include "PosBlock.h"
 #include "Constants.h" // for PAGE_SIZE
 #include "BlockWithPos.h"
-#include <list.h>
+#include <list>
 #include "../Operators/MinicolShimOperator.h"
 
 /** An class representing a series of positions and corresponding values from one or

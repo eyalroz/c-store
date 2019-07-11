@@ -5,7 +5,7 @@
 #include "../common/MinicolBlock.h"
 #include "../common/UnexpectedException.h"
 #include <stack>
-#include <list.h>
+#include <list>
 
 class MinicolConcat : public Operator
 {

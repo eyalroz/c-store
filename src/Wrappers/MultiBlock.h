@@ -36,7 +36,7 @@
 #include "../common/Block.h"
 #include "Type2Block.h"
 #include "CodingException.h"
-#include <iostream.h>
+#include <iostream>
 
 class MultiBlock : public Block
 {
