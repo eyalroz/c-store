@@ -43,7 +43,7 @@
 #include "../Wrappers/SMultiBlock.h"
 #include "../Wrappers/MultiBlock.h"
 #include <cmath>
-#include <hash_map.h>
+#include <unordered_map>
 
 class NLJoin : public Operator {
 

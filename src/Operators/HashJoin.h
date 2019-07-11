@@ -44,7 +44,7 @@
 #include "../Wrappers/MultiBlock.h"
 #include "../Util/HashMap.h"
 #include <cmath>
-#include <hash_map.h>
+#include <unordered_map>
 
 class PBObject {
  public:
