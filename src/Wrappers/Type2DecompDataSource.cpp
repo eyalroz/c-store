@@ -1,7 +1,7 @@
 #include "Type2DecompDataSource.h"
 
 Type2DecompDataSource::Type2DecompDataSource(AM* am_, bool valSorted_, Decoder* valDecoder_) 
-	: DataSource(am_), am(am_), valSorted(valSorted), startpos(1), consensus_ep(0), outPosBlockBackingBlock(valSorted_), mb_buffer(NULL), mb_bufsize(0), firstcall(true)
+	: DataSource(am_), am(am_), valSorted(valSorted_), startpos(1), consensus_ep(0), outPosBlockBackingBlock(valSorted_), mb_buffer(NULL), mb_bufsize(0), firstcall(true)
 {
 	cursor_to_val_map = NULL;
 	currblocks = NULL;
