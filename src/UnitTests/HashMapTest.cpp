@@ -47,33 +47,33 @@ bool HashMapTest::run(Globals *g, const vector<string>&) {
   IntValPos x(0,1);
   IntValPos y(0,2);
   IntValPos z(0,3);
-  map->put(&x, (void*)c, sizeof(int));
-  map->put(&y, (void*)d, sizeof(int));
-  map->put(&z, (void*)b, sizeof(int));
+  map->put(&x, (void*)&c, static_cast<unsigned int>(sizeof(int)));
+  map->put(&y, (void*)&d, static_cast<unsigned int>(sizeof(int)));
+  map->put(&z, (void*)&b, static_cast<unsigned int>(sizeof(int)));
   
 
-  if ((int)map->get(&x) != c) return false;
-  if ((int)map->get(&y) != d) return false;
-  if ((int)map->get(&z) != b) return false;
+  if (map->get(&x) != &c) return false;
+  if (map->get(&y) != &d) return false;
+  if (map->get(&z) != &b) return false;
   if (map->getDataSize() != 3*sizeof(int)) return false;
   if (map->getNumKeys() != 3) return false;
 
-  map->put(&x, (void*)a, sizeof(int));
-  if ((int)map->get(&x) != a) { return false; }
+  map->put(&x, (void*)&a, sizeof(int));
+  if (map->get(&x) != &a) { return false; }
   if (map->getDataSize() != 3*sizeof(int)) return false;
 
   if (map->getNumKeys() != 3) return false;
 
-  map->put(&w, (void*)c, sizeof(int));
-  if ((int)map->get(&x) != a) return false;
-  if ((int)map->get(&w) != c) return false;
+  map->put(&w, (void*)&c, sizeof(int));
+  if (map->get(&x) != &a) return false;
+  if (map->get(&w) != &c) return false;
   if (map->getDataSize() != 4*sizeof(int)) return false;
   if (map->getNumKeys() != 4) return false;
 
   for (int i = 0; i < 4; i++) {
     ValPos* k = map->getKey()->clone();
-    int a = (int)map->remove(k);
-    cout << "HashMap: iterated over (" << *(int*)k->value << "," << a << ")\n";
+    void* removed = map->remove(k);
+    cout << "HashMap: iterated over (" << *(int*)k->value << "," << removed << ")\n";
     delete k;
     //cout << "NumKeys: " << map->getNumKeys() << "\n";
   }
