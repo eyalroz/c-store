@@ -46,7 +46,7 @@ QueryAny::~QueryAny() {
 bool QueryAny::run(Globals* g, const vector<string>& args) {
   StopWatch stopWatch;
   stopWatch.start();
-  bool success;
+  bool success = true; // Note: We currently exit on failure
 
 #ifdef CSTORE_PAPI
   long_long elapsed_us = 0;
@@ -242,8 +242,7 @@ bool QueryAny::run(Globals* g, const vector<string>& args) {
   //flStream.seekp(ios::end);
   stopWatch.stopToFile(temp3);
   //flStream.close();
-  return success;
- 
+  return success; // Note: At the moment, always returns true
 }
 
 /**
