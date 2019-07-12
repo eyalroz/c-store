@@ -77,7 +77,7 @@ bool RLEWriterTest::run(Globals* g, const vector<string>& args) {
 
 	return success;	
 }
-bool RLEWriterTest::test(char* msg_, bool retBool_, int val_, int exp_) {
+bool RLEWriterTest::test(const char* msg_, bool retBool_, int val_, int exp_) {
 	using namespace std;
 	if (retBool_) {
 		cout << msg_ << " X: " << val_ << "\tE[X]: " << exp_ << " \t";

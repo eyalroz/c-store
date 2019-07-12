@@ -41,7 +41,7 @@
 class BlockPrinter
 {
 public:
-	BlockPrinter(Operator* dataSrc_[], int numCols_[], int numSrcs_, char* fileName_);
+	BlockPrinter(Operator* dataSrc_[], int numCols_[], int numSrcs_, const char* fileName_);
 	virtual ~BlockPrinter();
   void printColumns(bool skip_output = false);
   void printColumnsWithPosition();

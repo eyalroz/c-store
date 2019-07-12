@@ -54,7 +54,7 @@ public:
 	RLEExtractLoadAndAccess();
 	virtual ~RLEExtractLoadAndAccess();
 	bool run(Globals* g, const vector<string>&);
-	bool test(char* msg_, int retBool_, int val_, int exp_);
+	bool test(const char* msg_, int retBool_, int val_, int exp_);
 };
 
 #endif //_RLEEXTRACTLOADANDACCESS_H_

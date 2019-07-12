@@ -80,7 +80,7 @@ bool RLEBlockTest::run(Globals* g, const vector<string>& args) {
 	return success;
 }
 
-bool RLEBlockTest::test(char* msg_, int retBool_, int val_, int exp_) {
+bool RLEBlockTest::test(const char* msg_, int retBool_, int val_, int exp_) {
 	using namespace std;
 	if (retBool_) {
 		cout << msg_ << " X: " << val_ << "\tE[X]: " << exp_ << " \t";

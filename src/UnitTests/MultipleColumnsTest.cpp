@@ -38,7 +38,7 @@ MultipleColumnsTest::~MultipleColumnsTest()
 {
 }
 
-bool MultipleColumnsTest::extractAndLoad(Globals* g, char* colName_, char* colPath_) {
+bool MultipleColumnsTest::extractAndLoad(Globals* g, const char* colName_, const char* colPath_) {
 	string path=colPath_;
 	ColumnExtracter* ce = new ColumnExtracter(path, 1, g->force_rebuild);
 	RLEEncoder* encoder=new RLEEncoder((Operator*) ce, 0, 8*PAGE_SIZE, (byte) INT_VALUE_TYPE, (short) 16, (unsigned int) 27, (unsigned int) 16);

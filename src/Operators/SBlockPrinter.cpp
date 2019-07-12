@@ -31,7 +31,7 @@
 #include "SBlockPrinter.h"
 using namespace std;
 
-SBlockPrinter::SBlockPrinter(Operator* dataSrc_, int numSrcs_, char* fileName_)
+SBlockPrinter::SBlockPrinter(Operator* dataSrc_, int numSrcs_, const char* fileName_)
 {
 	dataSrc=dataSrc_;
 	//numCols=numCols_;

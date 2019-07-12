@@ -30,7 +30,7 @@
  */
 #include "BlockPrinter.h"
 
-BlockPrinter::BlockPrinter(Operator* dataSrc_[], int numCols_[], int numSrcs_, char* fileName_)
+BlockPrinter::BlockPrinter(Operator* dataSrc_[], int numCols_[], int numSrcs_, const char* fileName_)
 {
 	using namespace std;
 	dataSrc=dataSrc_;

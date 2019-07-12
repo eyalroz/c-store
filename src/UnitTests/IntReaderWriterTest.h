@@ -42,7 +42,7 @@ public:
 	virtual ~IntReaderWriterTest();
 	bool run(Globals* g, const vector<string>&);
 protected:
-	bool test(char* msg_, int retBool_, int val_, int exp_);
+	bool test(const char* msg_, int retBool_, int val_, int exp_);
 };
 
 #endif //_INTREADERWRITERTEST_H_

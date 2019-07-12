@@ -42,7 +42,7 @@
 class SBlockPrinter
 {
 public:
-  SBlockPrinter(Operator* dataSrc_, int numSrcs_, char* fileName_);
+  SBlockPrinter(Operator* dataSrc_, int numSrcs_, const char* fileName_);
   virtual ~SBlockPrinter();
   void printColumns(bool skip_output = false);
   //void printColumnsWithPosition();

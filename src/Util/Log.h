@@ -54,18 +54,18 @@ public:
 	static void logInit();
 	static void logDestroy();
 	
-	static bool writeToLog(char* src_, int priority_, char* msg_);
-	static bool writeToLog(char* src_, int priority_, string msg_);
-	static bool writeToLog(char* src_, int priority_, char* msg_, int var_);
+	static bool writeToLog(const char* src_, int priority_, const char* msg_);
+	static bool writeToLog(const char* src_, int priority_, string msg_);
+	static bool writeToLog(const char* src_, int priority_, const char* msg_, int var_);
 
 	// Get an output stream on which to print log messages
 	// Return pointer may be NULL (in the case log messages from this src
 	// and with this priority have been suppressed
-	static ostream* getLogStream(char* src_, int priority);
+	static ostream* getLogStream(const char* src_, int priority);
 	
 protected:
 	static ostream* logStream;
-	static bool allowedSrc(char* src_, int priority_);
+	static bool allowedSrc(const char* src_, int priority_);
 };
 
 #endif // LOG_H

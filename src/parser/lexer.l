@@ -15,7 +15,7 @@
 using namespace std;
 
 int lineno = 1;
-extern "C" void yyerror(char *s);
+extern "C" void yyerror(const char *s);
 
 %}
 

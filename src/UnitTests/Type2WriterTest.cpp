@@ -194,7 +194,7 @@ bool Type2WriterTest::twoValTest() {
 }
 
 
-bool Type2WriterTest::test(char* msg_, int retBool_, int val_, int exp_) {
+bool Type2WriterTest::test(const char* msg_, int retBool_, int val_, int exp_) {
 	using namespace std;
 	if (retBool_) {
 		cout << msg_ << " X: " << val_ << "\tE[X]: " << exp_ << " \t";

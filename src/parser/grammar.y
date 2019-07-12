@@ -70,7 +70,7 @@ int yylex( void );
 
 /* These are needed as placeholders to keep it happy */
 
-extern "C" void yyerror( char *str ) {
+extern "C" void yyerror( const char *str ) {
 	parser_error( "Syntax error" );
 }
 

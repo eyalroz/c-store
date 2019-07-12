@@ -147,7 +147,7 @@ bool RLEExtractLoadAndAccess::run(Globals* g, const vector<string>& args) {
 	return success;	
 }
 
-bool RLEExtractLoadAndAccess::test(char* msg_, int retBool_, int val_, int exp_) {
+bool RLEExtractLoadAndAccess::test(const char* msg_, int retBool_, int val_, int exp_) {
 	using namespace std;
 	if (retBool_) {
 		cout << msg_ << " X: " << val_ << "\tE[X]: " << exp_ << " \t";

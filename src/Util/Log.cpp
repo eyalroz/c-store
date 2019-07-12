@@ -66,11 +66,11 @@ void Log::logDestroy() {
 	}
 }
 
-bool Log::writeToLog(char* src_, int priority_, string msg_) {
-	writeToLog(src_, priority_, (char*) msg_.c_str());
+bool Log::writeToLog(const char* src_, int priority_, string msg_) {
+	writeToLog(src_, priority_, msg_.c_str());
 	return true;
 }
-bool Log::writeToLog(char* src_, int priority_, char* msg_) {
+bool Log::writeToLog(const char* src_, int priority_, const char* msg_) {
 	using namespace std;
 	if (priority_>=PRIORITY_THRESHOLD) {
 		if (allowedSrc(src_, priority_))
@@ -79,7 +79,7 @@ bool Log::writeToLog(char* src_, int priority_, char* msg_) {
 	return true;
 }
 
-bool Log::writeToLog(char* src_, int priority_, char* msg_, int val_) {
+bool Log::writeToLog(const char* src_, int priority_, const char* msg_, int val_) {
 	using namespace std;
 	if (priority_>=PRIORITY_THRESHOLD) {
 		if (allowedSrc(src_, priority_))
@@ -88,7 +88,7 @@ bool Log::writeToLog(char* src_, int priority_, char* msg_, int val_) {
 	return true;
 }
 
-ostream* Log::getLogStream(char* src_, int priority_) {
+ostream* Log::getLogStream(const char* src_, int priority_) {
 	if (priority_>=PRIORITY_THRESHOLD) {
 		if (allowedSrc(src_, priority_))
 			return logStream;
@@ -99,7 +99,7 @@ ostream* Log::getLogStream(char* src_, int priority_) {
 	}
 } 
 
-bool Log::allowedSrc(char* src_, int priority_) {
+bool Log::allowedSrc(const char* src_, int priority_) {
 	using namespace std;
 #ifdef CSTORE_NOLOG
 	return false;

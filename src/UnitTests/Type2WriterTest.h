@@ -46,7 +46,7 @@ protected:
 	bool twoValTest();
 	bool largeDeltaTest();
 	bool randomDeltaTest();
-	bool test(char* msg_, int retBool_, int val_, int exp_);
+	bool test(const char* msg_, int retBool_, int val_, int exp_);
 };
 
 #endif //_TYPE2WRITERTEST_H_

@@ -52,7 +52,7 @@ public:
 	virtual ~UnitTest();
 	virtual bool run(Globals* g, const vector<string>& args)=0;
 protected:
-	bool test(char* msg_, int retBool_, int val_, int exp_);
+	bool test(const char* msg_, int retBool_, int val_, int exp_);
 };
 
 #endif //_UNITTEST_H_

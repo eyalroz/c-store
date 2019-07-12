@@ -52,7 +52,7 @@ class MultipleColumnsTest : public UnitTest
 public:
 	MultipleColumnsTest();
 	virtual ~MultipleColumnsTest();
-	bool extractAndLoad(Globals* g, char * colName_, char* colPath_);
+	bool extractAndLoad(Globals* g, const char* colName_, const char* colPath_);
 	bool run(Globals* g, const vector<string>&);
 };
 

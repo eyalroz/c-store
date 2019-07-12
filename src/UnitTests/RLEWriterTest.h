@@ -48,7 +48,7 @@ public:
 	bool run(Globals* g, const vector<string>&);
 	
 protected:
-	bool test(char* msg_, bool retBool_, int val_, int exp_);
+	bool test(const char* msg_, bool retBool_, int val_, int exp_);
 };
 
 #endif //_RLEWRITERTEST_H_
