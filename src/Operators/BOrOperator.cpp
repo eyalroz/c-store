@@ -131,9 +131,9 @@ void BOrOperator::generateBlocks()
 			throw new UnexpectedException("BOrOperator: right operator not contiguous!");
 	}
 	 		
-	if ((leftOpType == RLE) && (rightOpType == RLE) || 
-		(leftOpType == RLE) && (inputBlockR == NULL) ||
-		(rightOpType == RLE) && (inputBlockL == NULL)) {
+	if (((leftOpType == RLE) && (rightOpType == RLE)) || 
+		((leftOpType == RLE) && (inputBlockR == NULL)) ||
+		((rightOpType == RLE) && (inputBlockL == NULL))) {
 			int leftStartPos, leftEndPos, rightStartPos, rightEndPos;
 			updateRightRange(rightStartPos, rightEndPos);			
 			updateLeftRange(leftStartPos, leftEndPos);
