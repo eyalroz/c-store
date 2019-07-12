@@ -376,6 +376,7 @@ RLETriple* RLEDataSource::getNextTripleFromDisk(AM* am_) {
 			  bool temp;
 			  temp = decoder->skipToBlockOnPos(currPosBlock->getStartPos());
 			  //assert(temp);
+			  (void) temp;
 			}
 						
 			//Log::writeToLog("RLEDataSource", 0, "getNextValBlock(): got a page with startPos:", decoder->getStartPos());			

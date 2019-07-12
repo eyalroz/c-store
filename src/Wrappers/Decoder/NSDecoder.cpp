@@ -285,9 +285,8 @@ bool NSDecoder::skipToPos(unsigned int blockPos_) {
     if (!skipADelta())
       throw new CodingException("NSDecoder::skipToBlock: skipADelta failed, it shoudln't be");
   }
-  Block* returnBlock;
   while (currLoc!=blockPos_) {
-    returnBlock=getNextBlock();
+    getNextBlock();
   }
   return true;
 }

@@ -165,7 +165,7 @@ Block* DictByteWriter::getEntries() {
 	    numvals=numEncodedValsInInt;
 	    reusecurrval=false;
 	  }
-	  else
+	  else { // TOOO: Double-check whether this block should really exist, or whether just the statement on the next line should be exeucted for the `else`.
 	    numvals = getEntry(currval);
 	    if (valueEntryMap.count(currval)==0) {
 	      if (numDistinctValues>escapeInt) {
@@ -216,7 +216,7 @@ Block* DictByteWriter::getEntries() {
 		return outBlock;
 	      }					
 	    }
-	    //}
+	  }
 	  /*else {
 	    writeSuccess=false;
 	    writeSuccess=byteWriter->writeInt(currval[0]);
@@ -235,7 +235,6 @@ Block* DictByteWriter::getEntries() {
 	outBlock->setBuffer(buffer, bfrSizeBits);
 	init=true;
 	return outBlock;
-		
 }
 
 unsigned int DictByteWriter::getEntry(int* entryarray) {

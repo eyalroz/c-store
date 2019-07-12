@@ -857,10 +857,11 @@ byte* Type2Block::makeNewBuffer(int value_, int startPos_, int endPos_) {
   z[newNumValues-1] = z[newNumValues-1] & mask;
 
   if (z[newNumValues-1]) {
-    int lastPos = 0;
-    for (unsigned int i =0; i < (sizeof(int)*8); i++)
-      if (z[indexOfLastPos] & (1 << (31 - i)))
-	lastPos=i;
+    // int lastPos = 0;
+    // for (unsigned int i =0; i < (sizeof(int)*8); i++)
+      // if (z[indexOfLastPos] & (1 << (31 - i)))
+	// lastPos=i;
+	// TODO: Is there really no use for lastPos here?
   }
   else if (indexOfLastPos == -1)
     header->endPos = 0;
