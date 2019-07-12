@@ -43,7 +43,16 @@ InsertOperator::~InsertOperator() {
 int InsertOperator::initTuple()
 {
   assert(tuple != NULL);
-  memset(tuple, 0, sizeof(tuple));
+  // This next statement appeared in the original CStore 0.2 code:
+  // 
+  //   memset(tuple, 0, sizeof(tuple));
+  //
+  // It's quite suspect. sizeof(tuple) is the size of the _pointer_ to the
+  // first character pointed to by `tuple`. It doesn't make sense that _that_
+  // should be the number of characters which should be set to 0. Instead,
+  // we'll use the number of characters allocated in the constructor.
+  std::size_t tupleBufferSize = (numColumnsInTable+1)*sizeof(int); 
+  memset(tuple, 0, tupleBufferSize);
   //storageKey = wmToTable->rwseg->getLastStorageKey();
   storageKey = wmToTable->getLastStorageKey( false );
   if (storageKey <= 0) {
