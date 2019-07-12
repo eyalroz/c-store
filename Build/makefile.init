@@ -1,10 +1,10 @@
 CC:=$(WTF) g++
 
 CSTORE_INCLUDE := src
-SLEEPYCAT_DIRECTORY := /usr/local/BerkeleyDB.4.2
+SLEEPYCAT_DIRECTORY := /usr
 SLEEPYCAT_INCLUDE := $(SLEEPYCAT_DIRECTORY)/include/
 SLEEPYCAT_LIB := $(SLEEPYCAT_DIRECTORY)/lib
-LZO_LIB := /home/dna/huff/lzo-1.08/src/.libs
+LZO_LIB := /usr/lib/x86_64-linux-gnu/
 
 CFLAGS  := -O0 -g3 -Wall -c -Wno-deprecated -fmessage-length=0
 #override CFLAGS with optimization flags if so desired
@@ -20,7 +20,7 @@ RULEFLAGS := -MM -MG -P -w
 IFLAGS 	:= -I$(SLEEPYCAT_INCLUDE) -I$(CSTORE_INCLUDE) 
 LFLAGS 	:= -L$(SLEEPYCAT_LIB) -L$(LZO_LIB)
 OPTS    := -Wl,--demangle
-LIBS	:= -ldb-4.2 -ldb_cxx-4.2  -lpthread -llzo
+LIBS	:= -ldb -ldb_cxx -lpthread -llzo2
 #override OPTS with gprof flags
 ifdef __CSTORE_GPROF__
 	OPTS    := -pg -Wl,--demangle
