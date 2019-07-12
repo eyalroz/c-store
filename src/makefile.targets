@@ -11,7 +11,7 @@ SRCS:	BSsrcs
 
 # emacs-style TAGS file
 TAGS:	SRCS
-	etags -l c++ - <SRCS
+	etags --language-force=c++ -L - <SRCS
 
 # lines of code report file
 LOC:	SRCS
