@@ -34,6 +34,7 @@
 #include <strstream>
 
 #include <db_cxx.h>
+#include "../Util/BDBUtil.h"
 
 #include "ROSAM.h"
 //#include "CatalogInstance.h"
@@ -315,8 +316,8 @@ void ROSAM::initCursors( )
 			_db_arr[ i ]->cursor( NULL, &(_iter_arr[ i ]), 0);
 			
 			Dbt key, data;
-			memset(&key, 0, sizeof(key)); 
-			memset(&data, 0, sizeof(data)); 
+			clear_dbt(key); 
+			clear_dbt(data); 
 
 			//int ret = _iter_arr[ i ]->get( &key, &data, DB_FIRST );
 
@@ -329,44 +330,44 @@ void ROSAM::initCursors( )
 	Dbt data, data2, pkey; // Dbt is a key / data pair
 	int ret;
 	int key = 20000;
-	memset(&pkey, 0, sizeof(pkey)); 
+	clear_dbt(pkey); 
 	pkey.set_size( sizeof(int) );
 	pkey.set_data( &key );	
 	data.set_flags(DB_DBT_MALLOC);
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(data); 
 	ret = _iter_arr[ 0 ]->get( &pkey, &data, DB_SET_RANGE );
 	int* x =(int*)data.get_data();
 	cout << "x[0]: " << x[0] << " " << x[1] << " " << x[2] << " " << x[3] << endl;	
 	key = 80000;
-	memset(&pkey, 0, sizeof(pkey)); 
+	clear_dbt(pkey); 
 	pkey.set_size( sizeof(int) );
 	pkey.set_data( &key );	
 	data.set_flags(DB_DBT_MALLOC);
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(data); 
 	ret = _iter_arr[ 1 ]->get( &pkey, &data, DB_SET_RANGE );
 	int* y =(int*)data.get_data();
 	cout << "y[0]: " << y[0] << " " << y[1] << " " << y[2] << " " << y[3] << endl;
 
 	data.set_flags(DB_DBT_MALLOC);
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(data); 
 	ret = _iter_arr[ 0 ]->get( &pkey, &data, DB_NEXT );
 	x =(int*)data.get_data();
 	cout << "x[0]: " << x[0] << " " << x[1] << " " << x[2] << " " << x[3] << endl;	
 
 	data.set_flags(DB_DBT_MALLOC);
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(data); 
 	ret = _iter_arr[ 1 ]->get( &pkey, &data, DB_NEXT );
 	y =(int*)data.get_data();
 	cout << "y[0]: " << y[0] << " " << y[1] << " " << y[2] << " " << y[3] << endl;
 
 	data.set_flags(DB_DBT_MALLOC);
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(data); 
 	ret = _iter_arr[ 0 ]->get( &pkey, &data, DB_NEXT );
 	x =(int*)data.get_data();
 	cout << "x[0]: " << x[0] << " " << x[1] << " " << x[2] << " " << x[3] << endl;	
 
 	data.set_flags(DB_DBT_MALLOC);
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(data); 
 	ret = _iter_arr[ 1 ]->get( &pkey, &data, DB_NEXT );
 	y =(int*)data.get_data();
 	cout << "y[0]: " << y[0] << " " << y[1] << " " << y[2] << " " << y[3] << endl;
@@ -403,11 +404,11 @@ const void* ROSAM::getCursorIndex(char* val, int& cursorindex) {
   cursorindex = currcursor;
   Dbt data, pkey; // Dbt is a key / data pair
   int ret;
-  memset(&pkey, 0, sizeof(pkey)); 
+  clear_dbt(pkey); 
   pkey.set_size( primkeysize );
   pkey.set_data( val );	
   data.set_flags(DB_DBT_MALLOC);
-  memset(&data, 0, sizeof(data)); 
+  clear_dbt(data); 
   ret = _cursor_arr[ currcursor ]->get( &pkey, &data, DB_SET );
   //ret = _cursor_arr[ currcursor ]->get( &pkey, &data, DB_GET_BOTH_RANGE );
   currcursor++;
@@ -424,11 +425,11 @@ const void* ROSAM::resetCursorIndex(char* val, int cursorindex) {
   //cursorindex = currcursor;
   Dbt data, pkey; // Dbt is a key / data pair
   int ret;
-  memset(&pkey, 0, sizeof(pkey)); 
+  clear_dbt(pkey); 
   pkey.set_size( primkeysize );
   pkey.set_data( val );	
   data.set_flags(DB_DBT_MALLOC);
-  memset(&data, 0, sizeof(data)); 
+  clear_dbt(data); 
   ret = _cursor_arr[ cursorindex ]->get( &pkey, &data, DB_SET );
   //ret = _cursor_arr[ cursorindex ]->get( &pkey, &data, DB_GET_BOTH_RANGE );
   if ( ret < 0 )
@@ -445,9 +446,9 @@ const void* ROSAM::skipToPagePrimary( char* key )
   Dbt data, /*data2, */pkey; // Dbt is a key / data pair
 	int ret;
 
-	memset(&pkey, 0, sizeof(pkey)); 
-	memset(&data, 0, sizeof(data)); 
-	//memset(&data2, 0, sizeof(data2)); 
+	clear_dbt(pkey); 
+	clear_dbt(data); 
+	//clear_dbt(data2); 
 
 	// I don't *think* this is necessary, but we'll check...
 	//pkey.set_flags(DB_DBT_MALLOC);
@@ -477,7 +478,7 @@ const void* ROSAM::skipToPagePrimary( char* key )
 	//pkey.set_data( key );
 		
 	//data.set_flags(DB_DBT_MALLOC);
-	//memset(&data, 0, sizeof(data)); 
+	//clear_dbt(data); 
 		
 		// last value index
 		/*		if ( type == TYPE3 )
@@ -557,9 +558,9 @@ const void* ROSAM::skipToPageSecondary( char* key )
 	Dbt data, data2, pkey; // Dbt is a key / data pair
 	int ret;
 
-	memset(&pkey, 0, sizeof(pkey)); 
-	memset(&data, 0, sizeof(data)); 
-	memset(&data2, 0, sizeof(data2)); 
+	clear_dbt(pkey); 
+	clear_dbt(data); 
+	clear_dbt(data2); 
 
 	// I don't *think* this is necessary, but we'll check...
 	pkey.set_flags(DB_DBT_MALLOC);
@@ -577,7 +578,7 @@ const void* ROSAM::skipToPageSecondary( char* key )
 		//data.set_data((char*)&temp);
 
 		
-		//memset(&data, 0, sizeof(data)); 
+		//clear_dbt(data); 
 		
 		// last value index
 		if ( false /*type == TYPE3*/ )
@@ -686,8 +687,8 @@ const void* ROSAM::getNextPage( char* key, Dbc *iter, u_int32_t flags,
   return getNextPageMulti( key, iter, flags, primary, buffer );
   Dbt skey, data, pkey; // Dbt is a key / data pair
 
-	memset(&pkey, 0, sizeof(pkey)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(pkey); 
+	clear_dbt(data); 
 
 	// I don't *think* this is necessary, but we'll check...
 	//pkey.set_flags(DB_DBT_MALLOC);
@@ -776,8 +777,8 @@ const void* ROSAM::getNextPageSingle ( char* key, Dbc *iter, u_int32_t flags,
 {
 	Dbt skey, data, pkey; // Dbt is a key / data pair
 
-	memset(&pkey, 0, sizeof(pkey)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(pkey); 
+	clear_dbt(data); 
 
 	// I don't *think* this is necessary, but we'll check...
 	pkey.set_flags(DB_DBT_MALLOC);
@@ -910,8 +911,8 @@ char* ROSAM::getLastIndexValuePrimary()
 	Dbt key, data;
 	char* answer=NULL;
 
-	memset(&key, 0, sizeof(key)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(key); 
+	clear_dbt(data); 
 
 	key.set_flags(DB_DBT_MALLOC);
 	data.set_flags(DB_DBT_MALLOC);
@@ -953,8 +954,8 @@ char* ROSAM::getLastIndexValueSecondary()
 
 	if (_numindicies> 1) {
 
-	memset(&key, 0, sizeof(key)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(key); 
+	clear_dbt(data); 
 
 	key.set_flags(DB_DBT_MALLOC);
 	data.set_flags(DB_DBT_MALLOC);
@@ -1047,7 +1048,7 @@ int ROSAM::compare_key(Db *dbp, const Dbt *a, const Dbt *b)
 int ROSAM::getSecondaryKey( Db *dbp, const Dbt *pkey,const Dbt *pdata, 
 									Dbt *skey )
 {
-	memset(skey, 0, sizeof(Dbt) );
+	clear_dbt(*skey);
 	skey->set_data( (( char* )pdata->get_data())+12  );
 	skey->set_size( sizeof( int ) );
 	return (0);

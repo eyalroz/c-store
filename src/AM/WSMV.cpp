@@ -36,6 +36,7 @@
 #include <cmath>
 
 #include <db_cxx.h>
+#include "../Util/BDBUtil.h"
 
 #include "WSMV.h"
 
@@ -122,13 +123,13 @@ void WSMV::addValueSKPair( int val, int sk )
 BDBPage* WSMV::getNextSKPage( )
 {
   Dbt dkey, ddata;  
-  
-  memset(&dkey, 0, sizeof(dkey)); 
-  memset(&ddata, 0, sizeof(ddata)); 
+
+  clear_dbt(dkey);
+  clear_dbt(ddata);
 
   _storage_key_cursor->get( &dkey, &ddata, DB_NEXT );
   
-  if ( dkey.get_data() == NULL )
+  if ( dkey.get_data() == NULL ) {
     if ( !returned_curr )
       {
 	returned_curr = true;
@@ -136,6 +137,7 @@ BDBPage* WSMV::getNextSKPage( )
       }
     else
       return NULL;
+  }
 
   //cout << " key " << *((int*)dkey.get_data()) << " data " << *((int*)(((char*)ddata.get_data())+8)) << endl;
   //memcpy( &page, ddata.get_data(), PAGE_SIZE );
@@ -154,8 +156,8 @@ void WSMV::addSortKeySKPair( char *sort_key, int size1,
 {
   	Dbt dkey, ddata;  
 
-	memset(&dkey, 0, sizeof(dkey)); 
-	memset(&ddata, 0, sizeof(ddata)); 
+	clear_dbt(dkey);
+	clear_dbt(ddata);
 
 	dkey.set_data( sort_key );
 	dkey.set_size( size1 );
@@ -179,8 +181,8 @@ int WSMV::getStorageKey( char *sort_key, int size )
 {
   Dbt dkey, ddata;  
   
-  memset(&dkey, 0, sizeof(dkey)); 
-  memset(&ddata, 0, sizeof(ddata)); 
+  clear_dbt(dkey);
+  clear_dbt(ddata);
 
   dkey.set_data( sort_key );
   dkey.set_size( size );
@@ -204,8 +206,8 @@ char* WSMV::getNextRecordSorted()
 	int ret;
 	Dbt dkey, data;
 
-	memset(&dkey, 0, sizeof(dkey)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(dkey);
+	clear_dbt(data);
 
 	ret = -1; //_cursor->get( &dkey, &data, DB_NEXT );
 
@@ -227,8 +229,8 @@ int WSMV::getNextIntSorted()
 	int ret;
 	Dbt dkey, data;
 
-	memset(&dkey, 0, sizeof(dkey)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(dkey);
+	clear_dbt(data);
 
 	ret = -1 ; //_cursor->get( &dkey, &data, DB_NEXT );
 

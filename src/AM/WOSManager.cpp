@@ -35,6 +35,7 @@
 #include <iterator>
 #include <algorithm>
 #include <db_cxx.h>
+#include "../Util/BDBUtil.h"
 #include <vector>
 
 #include "WOSManager.h"
@@ -126,7 +127,7 @@ WOSManager::WOSManager( string table_, int numindicies, int numColumns /*, Encod
   else
     _db_wos->cursor(NULL, &_dv_wos_cursor, 0);
 
-  memset(&_bulk_data, 0, sizeof(_bulk_data)); 
+  clear_dbt(_bulk_data); 
 
   _bulk_buffer = malloc( BUFFER_LENGTH );
   //initCursors();
@@ -373,8 +374,8 @@ int* WOSManager::getNextPosition( bool ros )
 	bool second_pass = false;
 	int answer;
 
-	memset(&skey, 0, sizeof(skey)); 
-	memset(&_bulk_data, 0, sizeof(_bulk_data)); 
+	clear_dbt(skey); 
+	clear_dbt(_bulk_data); 
 
 	_bulk_data.set_data( _bulk_buffer );
 	_bulk_data.set_ulen( BUFFER_LENGTH );

@@ -30,9 +30,12 @@
  */
 #ifndef _CATALOGINSTANCEBDB_H_
 #define _CATALOGINSTANCEBDB_H_
+
+#include "../Util/BDBUtil.h"
+
 int altKeyCallBackProjectionID(Db* primaryDb_, const Dbt* pKey, const Dbt* pData, Dbt* sKey)
 {
-  memset(sKey, 0, sizeof(Dbt));
+  clear_dbt(*sKey);
   COLUMN_REC* cr = (COLUMN_REC*) pData->get_data();
   sKey->set_data((void *)&cr->projectionID);
   sKey->set_size(sizeof(cr->projectionID));

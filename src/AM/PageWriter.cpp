@@ -36,6 +36,7 @@
 #include <cmath>
 
 #include <db_cxx.h>
+#include "../Util/BDBUtil.h"
 
 #include "PageWriter.h"
 
@@ -187,8 +188,8 @@ void PageWriter::placeRecord( Db *db, char *key, int key_size,
 {
 	Dbt dkey, ddata;  
 
-	memset(&dkey, 0, sizeof(key)); 
-	memset(&ddata, 0, sizeof(data)); 
+	clear_dbt(dkey); 
+	clear_dbt(ddata); 
 
 	dkey.set_data( key );
 	dkey.set_size( key_size );
@@ -269,8 +270,8 @@ void* PageWriter::getRecord( int key, Dbc *cursor, u_int32_t flags,
 {
 	Dbt skey, data, pkey; // Dbt is a key / data pair
 
-	memset(&pkey, 0, sizeof(pkey)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(pkey); 
+	clear_dbt(data); 
 
 	// I don't *think* this is necessary, but we'll check...
 	pkey.set_flags(DB_DBT_MALLOC);

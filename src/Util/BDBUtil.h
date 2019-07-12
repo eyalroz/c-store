@@ -1,6 +1,4 @@
-/* Copyright (c) 2005, Regents of Massachusetts Institute of Technology, 
- * Brandeis University, Brown University, and University of Massachusetts 
- * Boston. All rights reserved.
+/* Copyright (c) 2019, Eyal Rozenberg.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
@@ -28,18 +26,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _CATALOGTESTBDB_H_
-#define _CATALOGTESTBDB_H_
 
-#include "../Util/BDBUtil.h"
+//BDBUtil.h
+//Utility code for working with the Berkeley DB library
 
-int altKeyCallBack(Db* primaryDb_, const Dbt* pKey, const Dbt* pData, Dbt* sKey)
+#ifndef __BDB_UTIL_H
+#define __BDB_UTIL_H
+
+#include <db_cxx.h>
+#include <cstring>
+
+// Note: This function might be duplicated in other classes dealing with Dbt's;
+// consider factoring it out to another file.
+inline void clear_dbt(Dbt& dbt_to_clear)
 {
-  clear_dbt(*sKey);
-  COLUMN_REC* cr = (COLUMN_REC*) pData->get_data();
-  sKey->set_data((void *)&cr->projectionID);
-  sKey->set_size(sizeof(cr->projectionID));
-  //cout << cr->columnName << ':' << cr->columnID << ':' <<cr->projectionID << endl;
-  return (0);
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
+	memset(&dbt_to_clear, 0, sizeof(Dbt));
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 }
-#endif //_CATALOGTESTBDB_H_
+
+#endif //__BDB_UTIL_H

@@ -34,6 +34,7 @@
 #include <strstream>
 
 #include <db_cxx.h>
+#include "../Util/BDBUtil.h"
 
 #include "ROSWOSSegment.h"
 #include "CatalogInstance.h"
@@ -177,10 +178,9 @@ ROSWOSSegment::ROSWOSSegment( string segName, int numfields )
 	//  PRINT CONTENTS OF OPENED DB-s
 	Dbt skey, data; // Dbt is a key / data pair
 
-	memset(&skey, 0, sizeof(skey)); 
-	memset(&data, 0, sizeof(data)); 
-
-	memset(&_bulk_data, 0, sizeof(_bulk_data)); 
+	clear_dbt(skey);
+	clear_dbt(data);
+	clear_dbt(_bulk_data);
 
 	_bulk_buffer = malloc( BUFFER_LENGTH );
 	  
@@ -307,10 +307,10 @@ ROSWOSSegment::ROSWOSSegment( string segName, int numfields, void *wm )
 	//  PRINT CONTENTS OF OPENED DB-s
 	    /*Dbt skey, data; // Dbt is a key / data pair
 
-	memset(&skey, 0, sizeof(skey)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(skey);
+	clear_dbt(data);
 	    */
-	memset(&_bulk_data, 0, sizeof(_bulk_data)); 
+	clear_dbt(_bulk_data);
 
 	_bulk_buffer = malloc( BUFFER_LENGTH );
 	  
@@ -574,9 +574,9 @@ int* ROSWOSSegment::lookupByIndex( char* key, int size, Dbc *iter,
 	bool second_pass = false;
 	int answer;
 
-	memset(&skey, 0, sizeof(skey)); 
-	memset(&_bulk_data, 0, sizeof(_bulk_data)); 
-	//memset( (*buf), 0, sizeof( (*buf) ) );
+	clear_dbt(skey);
+	clear_dbt(_bulk_data);
+	// clear_dbt((*_buf));
 
 	//_bulk_data.set_data( _bulk_buffer );
 	_bulk_data.set_data( (*buf) );
@@ -682,8 +682,8 @@ int* ROSWOSSegment::lookupByIndex( char* key, int size, Dbc *iter,
 	char *result = ( char* )malloc( sizeof(int) );
 
 	
-	memset(&dkey, 0, sizeof(dkey)); 
-	memset(&data, 0, sizeof(data)); 
+	clear_dbt(dkey);
+	clear_dbt(data);
 
 	data.set_data( &result );
 	data.set_size( sizeof(int) );
