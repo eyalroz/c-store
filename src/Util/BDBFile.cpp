@@ -274,11 +274,24 @@ void BDBFile::closeCursor()
   if (dbCursor != NULL) dbCursor->close();
 }
 
+// Note: The returned pointer is _owning_ and must be freed
+static DB_BTREE_STAT* getBTreeStatistics(Db* dbHandle)
+{
+  DB_BTREE_STAT *pStat = NULL;
+
+#if OLD_BERKELEY_DB_VERSION
+  dbHandle->stat(&pStat, 0);
+#else
+  DbTxn* not_part_of_concurrent_data_store_group = NULL;
+  dbHandle->stat(not_part_of_concurrent_data_store_group, &pStat, 0);
+#endif
+  return pStat;
+}
+
 void BDBFile::showStats()
 {
-  DB_BTREE_STAT *pStat;
+  DB_BTREE_STAT *pStat = getBTreeStatistics(dbHandle);
 
-  dbHandle->stat(&pStat, 0);
   // Note: must use free, not delete.
   // This struct is allocated by C.
   //
@@ -289,9 +302,8 @@ void BDBFile::showStats()
 
 u_long BDBFile::getRecordCount()
 {
-  DB_BTREE_STAT *pStat;
+  DB_BTREE_STAT *pStat = getBTreeStatistics(dbHandle);
 
-  dbHandle->stat(&pStat, 0);
   // Note: must use free, not delete.
   // This struct is allocated by C.
   //
