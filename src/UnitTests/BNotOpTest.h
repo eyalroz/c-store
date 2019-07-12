@@ -59,8 +59,8 @@ public:
 	BNotOpTest();
 	virtual ~BNotOpTest();
 	bool run(Globals* g, const vector<string>&);
-	bool BNotOpTest::runTestCase1(unsigned int leftRunLengthDiff_, unsigned int leftStartPosDiff_);
-	bool BNotOpTest::runTestCase2(unsigned int leftRunLengthDiff_, unsigned int leftStartPosDiff_);
+	bool runTestCase1(unsigned int leftRunLengthDiff_, unsigned int leftStartPosDiff_);
+	bool runTestCase2(unsigned int leftRunLengthDiff_, unsigned int leftStartPosDiff_);
 };
 
 #endif //_BNOTOPTEST_H_

@@ -71,7 +71,7 @@ class ListProjections : public PObject
 		TVariable* getTuple(string projectionName, string tupleName );
 		void dump_env();
 		void	add(Projection* e);
-		void    ListProjections::addTupleAlias( string pname, string tname, string alias );
+		void    addTupleAlias( string pname, string tname, string alias );
 		list<Projection*> getProjections();
 		string	toString();
 		

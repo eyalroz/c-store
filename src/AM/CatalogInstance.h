@@ -156,7 +156,7 @@ class CatalogInstance
    CatalogInstance(); //  class Projection* proj );
    ~CatalogInstance();
   
-  list<class TVariable*> CatalogInstance::getColumns();
+  list<class TVariable*> getColumns();
   class TVariable* getCol( string name );
   void setAlias( string alias );
   string getAlias();

@@ -60,8 +60,8 @@ public:
 	BOrOpTest();
 	virtual ~BOrOpTest();
 	bool run(Globals* g, const vector<string>&);
-  bool BOrOpTest::runTestCase1(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
-  bool BOrOpTest::runTestCase2(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
+  bool runTestCase1(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
+  bool runTestCase2(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
 };
 
 #endif //_BOROPTEST_H_

@@ -60,8 +60,8 @@ public:
 	BAndOpTest();
 	virtual ~BAndOpTest();
 	bool run(Globals* g, const vector<string>&);
-  bool BAndOpTest::runTestCase1(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
-  bool BAndOpTest::runTestCase2(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
+  bool runTestCase1(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
+  bool runTestCase2(unsigned int leftRunLengthDiff_, unsigned int rightRunLengthDiff_, unsigned int leftStartPosDiff_, unsigned int rightStartPosDiff_);
 };
 
 #endif //_BANDOPTEST_H_
