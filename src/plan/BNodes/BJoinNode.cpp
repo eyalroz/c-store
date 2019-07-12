@@ -42,6 +42,9 @@
 
 #include <iostream>
 
+using std::cout;
+using std::endl;
+
 // Default
 BJoinNode::BJoinNode() : BNode()
 {
@@ -76,7 +79,7 @@ BJoinNode::BJoinNode(EColumn* lpLeft, EColumn* lpRight, int iComparisonType): BN
 	
 	if (lpLeft == NULL)
 	{
-		cout << "INVALID JOIN ARGUMENTS. The results won't be correct" << cout;
+		cout << "INVALID JOIN ARGUMENTS. The results won't be correct" << endl;
 		return;
 	}
 	else
@@ -87,7 +90,7 @@ BJoinNode::BJoinNode(EColumn* lpLeft, EColumn* lpRight, int iComparisonType): BN
 	
 	if (lpRight == NULL)
 	{
-		cout << "INVALID JOIN ARGUMENTS. The results won't be correct" << cout;
+		cout << "INVALID JOIN ARGUMENTS. The results won't be correct" << endl;
 		return;
 	}
 	else
