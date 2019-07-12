@@ -9,11 +9,11 @@ LZO_LIB := /home/dna/huff/lzo-1.08/src/.libs
 CFLAGS  := -O0 -g3 -Wall -c -Wno-deprecated -fmessage-length=0
 #override CFLAGS with optimization flags if so desired
 ifdef __CSTORE_OPTIMIZED__
-	CFLAGS  := -O3 -Wall -c -Wno-deprecated -fmessage-length=0 -DCSTORE_NOLOG -fpermissive
+	CFLAGS  := -O3 -Wall -c -Wno-deprecated -fmessage-length=0 -DCSTORE_NOLOG
 endif
 #override CFLAGS with gprof flags
 ifdef __CSTORE_GPROF__
-	CFLAGS  := -pg -g -O3 -Wall -c -Wno-deprecated -fmessage-length=0 -DCSTORE_NOLOG -fpermissive
+	CFLAGS  := -pg -g -O3 -Wall -c -Wno-deprecated -fmessage-length=0 -DCSTORE_NOLOG
 endif
 
 RULEFLAGS := -MM -MG -P -w 
@@ -23,7 +23,7 @@ OPTS    := -Wl,--demangle
 LIBS	:= -ldb-4.2 -ldb_cxx-4.2  -lpthread -llzo
 #override OPTS with gprof flags
 ifdef __CSTORE_GPROF__
-	OPTS    := -pg -Wl,--demangle -fpermissive
+	OPTS    := -pg -Wl,--demangle
 endif
 
 # for PAPI (only available on Shamrock)
