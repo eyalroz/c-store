@@ -276,12 +276,14 @@ byte* DataSource::getValSortedGetPage(AM* am_) {
 			switch	(pred->getPredType()) {
 				case Predicate::OP_GREATER_THAN: 	
 				case Predicate::OP_GREATER_THAN_OR_EQUAL: 	
-				case Predicate::OP_EQUAL: 	
-					lookupOnValue=true;
-					//for now assume value is an integer ... fix later ...
-					ValPos* vp = pred->getRHS();
-					assert(vp->type == ValPos::INTTYPE);
-					value=*(int*)vp->value;
+				case Predicate::OP_EQUAL:
+					{
+						lookupOnValue=true;
+						//for now assume value is an integer ... fix later ...
+						ValPos* vp = pred->getRHS();
+						assert(vp->type == ValPos::INTTYPE);
+						value=*(int*)vp->value;
+					}
 					break;
 				case Predicate::OP_LESS_THAN:
 				case Predicate::OP_LESS_THAN_OR_EQUAL:
