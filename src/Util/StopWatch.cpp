@@ -66,9 +66,9 @@ double StopWatch::stop() {
 }
 
 double StopWatch::stopToFile(const char* x) {
-  ofstream flStream;
-  flStream.open(x, ios::out | ios::app);
-  flStream.seekp(ios::end);
+  std::ofstream flStream;
+  flStream.open(x, std::ios::out | std::ios::app);
+  flStream.seekp(std::ios::end);
   //clock_t diff = clock()-watch;
   r2 = times(&u);
   flStream << "user time=" <<

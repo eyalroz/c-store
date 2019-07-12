@@ -149,7 +149,7 @@ public:
 	      return true;
 	    //pRLEBlock->block->skipToLoc(pos-pRLEBlock->getStartPos()); // FIXME iterator
 	    else {
-	      cerr << "invalid skip to: " << pos << endl;
+	      std::cerr << "invalid skip to: " << pos << std::endl;
 	      throw UnexpectedException("invalid skip");
 	    }
 	  }
