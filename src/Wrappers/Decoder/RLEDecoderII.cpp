@@ -121,7 +121,7 @@ bool RLEDecoderII::skipToTriple(unsigned int triplePos_) {
 }
 
 RLETriple* RLEDecoderII::getTriple(unsigned int triplePos_) {
-	if (triplePos_>=getSize()) return false;
+	if (triplePos_>=getSize()) return NULL;
 	// to guarantee atomicity in reading if there is a failure
 	int oldBitPos=reader->getCurrentBitPosition();
 	int oldCurrPos=currPos;

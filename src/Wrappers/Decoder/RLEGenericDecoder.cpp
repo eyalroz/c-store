@@ -140,7 +140,7 @@ bool RLEGenericDecoder::skipToTriple(unsigned int triplePos_) {
 }
 
 RLETriple* RLEGenericDecoder::getTriple(unsigned int triplePos_) {	
-  if (triplePos_>=getSize()) return false;
+  if (triplePos_>=getSize()) return NULL;
   // to guarantee atomicity in reading if there is a failure
   int oldPos=reader->getCurrentPos();
   reader->skipToStringPos(triplePos_);
