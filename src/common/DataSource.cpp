@@ -334,7 +334,7 @@ byte* DataSource::getValSortedGetPage(AM* am_) {
 			return pageBuffer;
 		}
 	}
-	catch (AccessException e_) {
+	catch (AccessException& e_) {
 		Log::writeToLog("DataSource", 5, e_.msg);
 		return NULL;
 	}
