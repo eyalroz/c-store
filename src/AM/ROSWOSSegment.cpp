@@ -568,9 +568,12 @@ char* ROSWOSSegment::getNextTupleBySortKey( bool reset )
 int* ROSWOSSegment::lookupByIndex( char* key, int size, Dbc *iter,
 				   u_int32_t flags, void **_ptr, void **buf )
 {
-   	size_t retklen, retdlen;
+	// The following three variables are set via a BDB library call, but are unused...
+	size_t retklen, retdlen;
+	void *retkey;
+
 	Dbt skey;
-	void *retkey, *retdata;	
+	void *retdata;
 	bool second_pass = false;
 	int answer;
 
@@ -596,7 +599,7 @@ int* ROSWOSSegment::lookupByIndex( char* key, int size, Dbc *iter,
 	if ( ((*_ptr)) == NULL )
 	  {
 	    //cout << " Request from iter " << iter << "  key " << *(int *)key << " FLAGS? " << flags <<  endl;
-	    memset( (*buf), 0, sizeof( (*buf) ) );
+	    memset( (*buf), 0, BUFFER_LENGTH );
 
 	    answer = iter->/*_sort_key_cursor->*/get( &skey, &_bulk_data, 
 				   flags | DB_MULTIPLE_KEY );
@@ -630,6 +633,9 @@ int* ROSWOSSegment::lookupByIndex( char* key, int size, Dbc *iter,
 	  return NULL;
 	
 	DB_MULTIPLE_KEY_NEXT((*_ptr), _bulk_data.get_DBT(), retkey, retklen, retdata, retdlen);
+	(void) retdlen;
+	(void) retklen;
+	(void) retkey;
 	//DB_MULTIPLE_KEY_NEXT(_p_bulk, _bulk_data.get_DBT(), retkey, retklen, retdata, retdlen);
 	// cout << " ANd now, ptr is " << *_ptr << " int ptr " << ((int*)retkey) << endl;
 
