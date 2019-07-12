@@ -1,15 +1,19 @@
 #include "Type2BlockToMinicolConverter.h"
 
-Type2BlockToMinicolConverter::Type2BlockToMinicolConverter(DataSource* ds_, char* name) : 
+Type2BlockToMinicolConverter::Type2BlockToMinicolConverter(DataSource* ds_, const char* name) :
 										MinicolShimOperator(NULL, -1, NULL, 1, 1), ds(ds_)
 {
-	this->name = new char[strlen(name) + 1];
-	strcpy(this->name, name);
+	// Note: The base class also sets a value for name - but does not
+	// allocate memory, so it's safe(ish) for us to overwrite the value
+	// of `this->name`
+	this->name = strdup(name);
 }
 
 Type2BlockToMinicolConverter::~Type2BlockToMinicolConverter()
 {
-	delete [] name;
+	// Note: The base class doesn't free any memory, so leaving `name`
+	// with the same value is ok
+	free(const_cast<char*>(name));
 }
 
 MinicolBlock* Type2BlockToMinicolConverter::getNextMinicolBlock() {

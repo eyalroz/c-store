@@ -10,7 +10,7 @@
 class Type2BlockToMinicolConverter : public MinicolShimOperator
 {
 public:
-	Type2BlockToMinicolConverter(DataSource* ds_, char* name);
+	Type2BlockToMinicolConverter(DataSource* ds_, const char* name);
 	virtual ~Type2BlockToMinicolConverter();
 protected:
 	virtual int getLastPosition() {

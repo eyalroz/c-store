@@ -1,15 +1,19 @@
 #include "BlockWithPosToMinicolConverter.h"
 
-BlockWithPosToMinicolConverter::BlockWithPosToMinicolConverter(DataSource* ds_, char* name) 
+BlockWithPosToMinicolConverter::BlockWithPosToMinicolConverter(DataSource* ds_, const char* name)
 									: MinicolShimOperator(NULL, -1, NULL, 1, 1), ds(ds_)//, firstcall(true)
 {
-	this->name = new char[strlen(name) + 1];
-	strcpy(this->name, name);
+	// Note: The base class also sets a value for name - but does not
+	// allocate memory, so it's safe(ish) for us to overwrite the value
+	// of `this->name`
+	this->name = strdup(name);
 }
 
 BlockWithPosToMinicolConverter::~BlockWithPosToMinicolConverter()
 {
-	delete [] name;
+	// Note: The base class doesn't free any memory, so leaving `name`
+	// with the same value is ok
+	free(const_cast<char*>(name));
 }
 
 

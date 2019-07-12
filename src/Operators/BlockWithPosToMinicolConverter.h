@@ -12,7 +12,7 @@
 class BlockWithPosToMinicolConverter : public MinicolShimOperator
 {
 public:
-	BlockWithPosToMinicolConverter(DataSource* ds_, char* name);
+	BlockWithPosToMinicolConverter(DataSource* ds_, const char* name);
 	~BlockWithPosToMinicolConverter();
 	
 //	virtual	Block* getNextValBlock(int colIndex_);

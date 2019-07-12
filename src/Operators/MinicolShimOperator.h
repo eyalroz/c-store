@@ -29,7 +29,7 @@ protected:
 	int outwidth;
 	int ncurrblocks;
 	//virtual void updateMinicolBlock();
-	char* name;
+	const char* name;
 	bool doConcat;
 private:
 	MinicolShimOperator(const MinicolShimOperator&) {throw UnexpectedException();}
