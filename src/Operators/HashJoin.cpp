@@ -344,7 +344,8 @@ void HashJoin::prepareRightHashTable() {
       break;
     if (vp->position % 100000 == 0)
       cout << "hi dan" << vp->position << endl;
-    if (bufferset = (byte**) rMap->get(vp)) {
+    bufferset = (byte**) rMap->get(vp);
+    if (bufferset != NULL) {
       curloc = *(int*)(bufferset[rarraysize]);
       for (int i = 0; i < rarraysize; i++) {
 	curcap = *(int*)(bufferset[i]);
@@ -431,10 +432,11 @@ void HashJoin::prepareRightHashTablePos() {
     rpbo = new PBObject();
     rpbo->addPosBlock(posify(rBlockIn[0]->clone(*rBlockIn[0])));      
     rMap->put(rBlockIn[0]->getStartPair(), rpbo, sizeof(PBObject));
-    while (rBlockIn[0]=r_src[0]->getNextValBlock(r_predcol[0])) {
+    while ( (rBlockIn[0]=r_src[0]->getNextValBlock(r_predcol[0])) != NULL) {
       assert(rBlockIn[0]->isOneValue());
       vp = rBlockIn[0]->getStartPair();
-      if (rpbo = (PBObject*) rMap->get(vp))
+      rpbo = (PBObject*) rMap->get(vp);
+      if (rpbo != NULL)
 	rpbo->addPosBlock(posify(rBlockIn[0]->clone(*rBlockIn[0])));
       else {
 	rpbo = new PBObject();
@@ -455,7 +457,8 @@ void HashJoin::prepareRightHashTablePos() {
 	continue;
       }
       vp = rBlockIn[0]->getNext();
-      if (rBlockOut = (PosArrayBlock*) rMap->get(vp))
+      rBlockOut = (PosArrayBlock*) rMap->get(vp);
+      if (rBlockOut != NULL)
 	((PosArrayBlock*)rBlockOut)->setPosVarCap(vp->position);
       else {
 	rBlockOut = new PosArrayBlock(100);
