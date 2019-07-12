@@ -32,6 +32,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <string.h>
 #include <map>
 #include <cmath>
 #include <cassert>
