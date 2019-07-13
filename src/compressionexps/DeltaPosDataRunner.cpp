@@ -68,7 +68,7 @@ bool DeltaPosDataRunner::run(Globals* g, const vector<string>& args) {
   Operator* srcs[1]={agg};
   int numCols[1]={2};
   
-  sprintf(temp, "%s.out", temp);
+  strcpy(temp + strlen(temp), ".out");
   BlockPrinter* bPrint=new BlockPrinter(srcs, numCols, 1, temp);
   bPrint->printColumns();
     
