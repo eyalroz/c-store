@@ -118,7 +118,7 @@ bool NSEncodeDecode::run(Globals* g, const vector<string>& args) {
 	while (page!=NULL) {
 		while (currB!=NULL) {
 		  ValPos* pair;
-		  while (pair=currB->getNext()) {
+		  while ( (pair=currB->getNext()) != NULL) {
 		    assert(pair->type == ValPos::INTTYPE);
 		    valueSuccess&=(values[counter]==*(int*)pair->value);
 		    valueSuccess&=(startPos+counter==pair->position);

@@ -147,7 +147,8 @@ void PagePlacer::placeColumn(string name_, bool splitOnValue_, bool valSorted_) 
 		  }
 		}
 		else {
-		  if (val = vparray[currindex++]) {
+		  val = vparray[currindex++];
+		  if (val != NULL) {
 		    doWhile = true;
 		  }
 		}
@@ -190,7 +191,8 @@ void PagePlacer::placeColumn(string name_, bool splitOnValue_, bool valSorted_) 
 			  }
 			}
 			else {
-			  if (val = vparray[currindex++]) {
+			  val = vparray[currindex++];
+			  if (val != NULL) {
 			    doWhile = true;
 			  }
 			}

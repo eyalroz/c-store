@@ -86,17 +86,17 @@ bool Queries::run(Globals* g, const vector<string>& args) {
 		ds1=new IntDataSource(am1, false, true);	
 	}		
 	
-	if (num_&0x03==0) {
+	if ((num_&0x03)==0) {
 		name2="NSSuppkey.BDB";
 		am2 = new ROSAM( name2 , 2);
 		ds2=new NSDataSource(am2, false);	
 	} 
-	else if	(num_&0x03==1) {
+	else if	((num_&0x03)==1) {
 		name2="LZSuppkey.BDB";
 		am2 = new ROSAM( name2 , 2);
 		ds2=new LZDataSource(am2, false);			
 	}
-	else if (num_&0x03==2) {
+	else if ((num_&0x03)==2) {
 		name2="IntSuppkey.BDB";
 		am2 = new ROSAM( name2 , 2);
 		ds2=new IntDataSource(am2, false, true);					
