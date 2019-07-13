@@ -61,13 +61,13 @@ bool BitProfileTest::run(Globals* g, const vector<string>& args) {
 	readerStream.open("ReaderProfile.csv");
 	byte* bfr=new byte[20000*PAGE_SIZE];
 	memset(bfr,2,20000*PAGE_SIZE);
-	bitReaderTest(readerStream, bfr, 8*20000*PAGE_SIZE);
-	byteReaderTest(readerStream, bfr, 8*20000*PAGE_SIZE);
-	intReaderTest(readerStream, bfr, 8*20000*PAGE_SIZE);
+	bitReaderTest(readerStream, bfr, 8 * 20000 * std::size_t(PAGE_SIZE));
+	byteReaderTest(readerStream, bfr, 8 * 20000 * std::size_t(PAGE_SIZE));
+	intReaderTest(readerStream, bfr, 8 * 20000 * std::size_t(PAGE_SIZE));
 	return true;
 }
 
-void BitProfileTest::byteReaderTest(ofstream& readerStream, byte* bfr, int numBitsInBfr) {
+void BitProfileTest::byteReaderTest(ofstream& readerStream, byte* bfr, std::size_t numBitsInBfr) {
 	StopWatch clock;	
 	double time;		
 	ByteReader* reader=new ByteReader(bfr, numBitsInBfr);
@@ -107,7 +107,7 @@ void BitProfileTest::byteReaderTest(ofstream& readerStream, byte* bfr, int numBi
 }
 
 
-void BitProfileTest::intReaderTest(ofstream& readerStream, byte* bfr, int numBitsInBfr) {
+void BitProfileTest::intReaderTest(ofstream& readerStream, byte* bfr, std::size_t numBitsInBfr) {
 	double time;
 	StopWatch clock;			
 	IntReader* reader=new IntReader(bfr, numBitsInBfr);
@@ -125,7 +125,7 @@ void BitProfileTest::intReaderTest(ofstream& readerStream, byte* bfr, int numBit
 	readerStream << endl;		
 }
 
-void BitProfileTest::bitReaderTest(ofstream& readerStream, byte* bfr, int numBitsInBfr) {
+void BitProfileTest::bitReaderTest(ofstream& readerStream, byte* bfr, std::size_t numBitsInBfr) {
 	double time;
 	StopWatch clock;			
 	BitReader* reader=new BitReader(bfr, numBitsInBfr);

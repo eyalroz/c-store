@@ -54,9 +54,9 @@ public:
 	virtual void bitWriterTest(ofstream& writerStream_);
 	virtual void byteWriterTest(ofstream& writerStream_);
 	virtual void intWriterTest(ofstream& writerStream_);
-	virtual void bitReaderTest(ofstream& readerStream, byte* bfr, int numBitsInBfr);
-	virtual void byteReaderTest(ofstream& readerStream, byte* bfr, int numBitsInBfr);
-	virtual void intReaderTest(ofstream& readerStream, byte* bfr, int numBitsInBfr);
+	virtual void bitReaderTest(ofstream& readerStream, byte* bfr, std::size_t numBitsInBfr);
+	virtual void byteReaderTest(ofstream& readerStream, byte* bfr, std::size_t numBitsInBfr);
+	virtual void intReaderTest(ofstream& readerStream, byte* bfr, std::size_t numBitsInBfr);
 };
 
 #endif //_BITPROFILETEST_H_
