@@ -48,6 +48,9 @@
 #define INSERT_STATEMENT 2
 #define DELETE_STATEMENT 3 
 
+#if __cplusplus >= 201103L
+[[noreturn]]
+#endif
 void parser_error( std::string message );
 
 #endif /* _CONSTANTS_H_ */

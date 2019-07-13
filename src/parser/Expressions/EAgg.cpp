@@ -83,6 +83,8 @@ int EAgg::getType( ListProjections* lp ) {
 	} else {
 		parser_error( "Non-numeric type for aggregate function " + m_sOp );
 	}
+	// can't get here
+	exit(1);
 }
 
 int EAgg::isAggregate() {

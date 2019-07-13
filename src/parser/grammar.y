@@ -78,7 +78,10 @@ extern "C" int yywrap( void ) {
         return 1;
 }
 
-void parser_error( string message ) {
+#if __cplusplus >= 201103L
+[[noreturn]]
+#endif
+void parser_error( std::string message ) {
 	cerr << "error: " << message << endl;
 	exit( 1 );
 }

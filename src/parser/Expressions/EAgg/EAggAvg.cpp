@@ -56,6 +56,8 @@ int EAggAvg::getType( ListProjections* lp ) {
 	} else {
 		parser_error( "Non-numeric type for aggregate function " + m_sOp );
 	}
+	// Can't get here - parser_error() doesn't return
+	exit(1);
 }
 
 // Translate the expression into a plan node
