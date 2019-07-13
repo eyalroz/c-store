@@ -1173,20 +1173,6 @@ string CatalogInstance::stripOffDirectory( string fName )
       return fName;    
 }
 
-static bool getCat() {
-  return CatalogInstance::gottenCat;
-}
-
-static CatalogInstance* getCatalog()
-{
-  if ( !CatalogInstance::catalog ) {
-    CatalogInstance::catalog = new CatalogInstance();
-    CatalogInstance::gottenCat=true;
-  }
-
-    return CatalogInstance::catalog;
-}
-
 vector<string> *CatalogInstance::getColumnNames( string projName )
 {
   if ( _projections.find( projName ) == _projections.end() )
