@@ -1,3 +1,5 @@
+%option nounput
+
 %{
 
 #define YYSTYPE PObject*
