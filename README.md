@@ -1,6 +1,6 @@
 # C-Store: A column-oriented DBMS prototype
 
-**Note: Do _not_ use this repository in production code. It is a (now old) research prototype.**
+**Note: Do _not_ use this repository as an actual DBMS. It is a mostly-unmaintained research prototype.**
 
 C-Store was a collaboration project between researches in MIT, and the universities of Yale, Brandeis, Brown and Massachusats Boston. Among the people involved in it (from the research publication side) were:
 
