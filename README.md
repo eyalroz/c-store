@@ -19,13 +19,13 @@ These issues motivated the creation of this repository. The intent is to address
 
 ## Contact and feedback
 
-Note: The owner/maintainer of this repository (Eyal Rozenerg) is _not_ one of the authors or researchers involved with C-Store originally!
+Note: The owner/maintainer of this repository is _not_ one of the authors or researchers involved with C-Store originally!
 
 * Have you found a **bug** in the code? Report it via the [issues page](https://github.com/eyalroz/c-store/issues).
 * Do you have **questions about C-Store as a project**, its design, or even implementation specifics? Ask one of the original authors. However, the repository owner/maintainer is [involved](https://arxiv.org/abs/1904.12217) in column store architecture research, and may be interested in discussing your idea in other contexts.
 * Are you having **trouble building** C-Store on
    * ... GNU/Linux? Report it via the [issues page](https://github.com/eyalroz/c-store/issues).
    * ... any other platform? Not surprising - C-Store was only intended to build on Linux. However, you may [write the maintainer](mailto:eyalroz@technion.ac.il) to try and explain why you want to make this work on other platforms.
-* Do you have a specific idea about how to **improve C-Store**'s design or implementation? <- Don't bother. The code is essentially frozen is is maintained as a resource for researchers into column stores. 
+* Do you have a specific idea about how to **improve C-Store**'s design or implementation? <- Don't bother. The code is essentially frozen, and is maintained as a resource for researchers into column stores. 
 * Have any **other questions**? [Write the maintainer](mailto:eyalroz@technion.ac.il).
 
