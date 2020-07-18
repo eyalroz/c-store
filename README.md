@@ -27,6 +27,6 @@ Note: The owner/maintainer of this repository is _not_ one of the authors or res
    * ... GNU/Linux? Report it via the [issues page](https://github.com/eyalroz/c-store/issues).
    * ... any other platform? Not surprising - C-Store was only intended to build on Linux. However, you may [write the repository maintainer](mailto:eyalroz@technion.ac.il) to try and explain why you want to make this work on other platforms.
 * Do you have a specific idea about how to **improve C-Store**'s design or implementation? 
-   1. Don't bother... The code is essentially frozen, and is maintained as a resource for researchers into column stores. 
-   2. Do bother! but not in C-Store itself! Contact the [repository maintainer](mailto:eyalroz@technion.ac.il) to chat about column store architecture and potential collaborations.
+   1. Don't bother... the code is essentially frozen, and is maintained as a resource for researchers into column stores. 
+   2. Do bother! ... but not in C-Store itself: Contact the [repository maintainer](mailto:eyalroz@technion.ac.il) to chat about column store architecture and potential collaborations.
 
